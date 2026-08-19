@@ -7,11 +7,8 @@ export function BlogPosts() {
   if (allBlogs.length === 0) {
     return (
       <div className="empty-posts">
-        <span className="post-number">00</span>
-        <div>
-          <h3>第一篇文章，正在路上</h3>
-          <p>内容还在整理。很快，这里会出现一些认真写下的东西。</p>
-        </div>
+        <h3>这里暂时还是空的。</h3>
+        <p>第一篇文章正在整理，很快会有一些认真写下的东西。</p>
       </div>
     )
   }
@@ -27,23 +24,17 @@ export function BlogPosts() {
           }
           return 1
         })
-        .map((post, index) => (
+        .map((post) => (
           <Link
             key={post.slug}
             className="post-item"
             href={`/blog/${post.slug}`}
           >
-            <span className="post-number">
-              {String(index + 1).padStart(2, '0')}
-            </span>
-            <div className="post-copy">
-              <h3>{post.metadata.title}</h3>
-              <p>{post.metadata.summary}</p>
-            </div>
+            <h3>{post.metadata.title}</h3>
             <time dateTime={post.metadata.publishedAt}>
               {formatDate(post.metadata.publishedAt, false)}
             </time>
-            <span className="post-arrow" aria-hidden="true">↗</span>
+            <p>{post.metadata.summary}</p>
           </Link>
         ))}
     </div>

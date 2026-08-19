@@ -14,7 +14,7 @@ export function Navbar() {
     <header className="site-header">
       <Link className="brand" href="/" aria-label="杰的个人主页">
         <span className="brand-name">杰</span>
-        <span className="brand-label">Personal notes</span>
+        <span className="brand-label">的博客</span>
       </Link>
       <nav className="site-nav" aria-label="主导航">
         {Object.entries(navItems).map(([path, { name }]) => (

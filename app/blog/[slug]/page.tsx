@@ -83,7 +83,6 @@ export default function Blog({ params }) {
         }}
       />
       <header className="article-header">
-        <p className="eyebrow">Journal / 文章</p>
         <h1>{post.metadata.title}</h1>
         <time className="article-meta" dateTime={post.metadata.publishedAt}>
           {formatDate(post.metadata.publishedAt)}
