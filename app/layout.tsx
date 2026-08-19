@@ -11,16 +11,16 @@ import { baseUrl } from './sitemap'
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: 'Next.js Portfolio Starter',
-    template: '%s | Next.js Portfolio Starter',
+    default: '杰的个人主页',
+    template: '%s · 杰',
   },
-  description: 'This is my portfolio.',
+  description: '杰的个人主页与博客，记录想法、作品和正在探索的事。',
   openGraph: {
-    title: 'My Portfolio',
-    description: 'This is my portfolio.',
+    title: '杰的个人主页',
+    description: '记录想法、作品和正在探索的事。',
     url: baseUrl,
-    siteName: 'My Portfolio',
-    locale: 'en_US',
+    siteName: '杰的个人主页',
+    locale: 'zh_CN',
     type: 'website',
   },
   robots: {
@@ -44,22 +44,15 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html
-      lang="en"
-      className={cx(
-        'text-black bg-white dark:text-white dark:bg-black',
-        GeistSans.variable,
-        GeistMono.variable
-      )}
-    >
-      <body className="antialiased max-w-xl mx-4 mt-8 lg:mx-auto">
-        <main className="flex-auto min-w-0 mt-6 flex flex-col px-2 md:px-0">
+    <html lang="zh-CN" className={cx(GeistSans.variable, GeistMono.variable)}>
+      <body className="antialiased">
+        <div className="site-shell">
           <Navbar />
-          {children}
+          <main className="site-main">{children}</main>
           <Footer />
           <Analytics />
           <SpeedInsights />
-        </main>
+        </div>
       </body>
     </html>
   )

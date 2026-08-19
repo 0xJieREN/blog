@@ -59,7 +59,7 @@ export default function Blog({ params }) {
   }
 
   return (
-    <section>
+    <section className="article-page">
       <script
         type="application/ld+json"
         suppressHydrationWarning
@@ -77,19 +77,17 @@ export default function Blog({ params }) {
             url: `${baseUrl}/blog/${post.slug}`,
             author: {
               '@type': 'Person',
-              name: 'My Portfolio',
+              name: '杰',
             },
           }),
         }}
       />
-      <h1 className="title font-semibold text-2xl tracking-tighter">
-        {post.metadata.title}
-      </h1>
-      <div className="flex justify-between items-center mt-2 mb-8 text-sm">
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">
+      <header className="article-header">
+        <h1>{post.metadata.title}</h1>
+        <time className="article-meta" dateTime={post.metadata.publishedAt}>
           {formatDate(post.metadata.publishedAt)}
-        </p>
-      </div>
+        </time>
+      </header>
       <article className="prose">
         <CustomMDX source={post.content} />
       </article>
