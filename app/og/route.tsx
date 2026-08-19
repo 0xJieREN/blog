@@ -6,8 +6,8 @@ export function GET(request: Request) {
 
   return new ImageResponse(
     (
-      <div tw="flex flex-col w-full h-full justify-between bg-[#f2f5f7] text-[#17212b] p-16">
-        <p tw="text-2xl uppercase tracking-widest">Jie / Personal Notes</p>
+      <div tw="flex flex-col w-full h-full justify-between bg-[#f7f9fb] text-[#1b2731] p-16">
+        <p tw="text-2xl uppercase tracking-widest">Jie / AI 和 Finance</p>
         <div tw="flex w-full items-end justify-between">
           <h2 tw="flex max-w-4xl text-6xl font-medium tracking-tight text-left">
             {title}

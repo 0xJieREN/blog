@@ -8,16 +8,35 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import Footer from './components/footer'
 import { baseUrl } from './sitemap'
 
+const themeScript = `
+  (function () {
+    var theme = 'light'
+    try {
+      var savedTheme = window.localStorage.getItem('theme')
+      theme = savedTheme === 'light' || savedTheme === 'dark'
+        ? savedTheme
+        : window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light'
+    } catch (_) {
+      theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    }
+    document.documentElement.setAttribute('data-theme', theme)
+  })()
+`
+
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
     default: '杰的个人主页',
     template: '%s · 杰',
   },
-  description: '杰的个人主页与博客，记录想法、作品和正在探索的事。',
+  description:
+    '关注 AI 和 Finance 的独立开发者，记录投资思考、软件开发、AI 工具、个人项目和生活观察。',
   openGraph: {
     title: '杰的个人主页',
-    description: '记录想法、作品和正在探索的事。',
+    description:
+      '关注 AI 和 Finance 的独立开发者，记录投资思考、软件开发、AI 工具和个人项目。',
     url: baseUrl,
     siteName: '杰的个人主页',
     locale: 'zh_CN',
@@ -44,7 +63,14 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="zh-CN" className={cx(GeistSans.variable, GeistMono.variable)}>
+    <html
+      lang="zh-CN"
+      className={cx(GeistSans.variable, GeistMono.variable)}
+      suppressHydrationWarning
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="antialiased">
         <div className="site-shell">
           <Navbar />

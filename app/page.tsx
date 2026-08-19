@@ -9,7 +9,8 @@ export default function Page() {
           你好，我是杰。
         </h1>
         <p className="hero-intro">
-          这里是我的个人主页，也是一间安静的文字房间。我会在这里记录想法、作品，以及那些值得被慢慢想清楚的事。
+          我是一名关注 AI 和 Finance 的独立开发者。这里主要记录投资思考、软件开发、AI
+          工具和个人项目，也偶尔写一些生活中的观察。
         </p>
       </section>
 

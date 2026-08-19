@@ -1,42 +1,27 @@
-# Portfolio Blog Starter
+# 杰的博客
 
-This is a porfolio site template complete with a blog. Includes:
+一个关注 AI 和 Finance 的独立开发者的个人主页与博客。
 
-- MDX and Markdown support
-- Optimized for SEO (sitemap, robots, JSON-LD schema)
-- RSS Feed
-- Dynamic OG images
-- Syntax highlighting
-- Tailwind v4
-- Vercel Speed Insights / Web Analytics
-- Geist font
+这里主要记录投资思考、软件开发、AI 工具和个人项目，也偶尔写一些生活中的观察。
 
-## Demo
+## 找到我
 
-https://portfolio-blog-starter.vercel.app
+- [GitHub](https://github.com/0xJieREN)
+- [LinkedIn](https://www.linkedin.com/in/jierenglobal/)
+- [小红书](https://www.xiaohongshu.com/user/profile/62ef1618000000001f00540f)
+- [Email](mailto:jierenglobal@gmail.com)
 
-## How to Use
-
-You can choose from one of the following two methods to use this repository:
-
-### One-Click Deploy
-
-Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=vercel-examples):
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/vercel/examples/tree/main/solutions/blog&project-name=blog&repository-name=blog)
-
-### Clone and Deploy
-
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [pnpm](https://pnpm.io/installation) to bootstrap the example:
+## 本地开发
 
 ```bash
-pnpm create next-app --example https://github.com/vercel/examples/tree/main/solutions/blog blog
-```
-
-Then, run Next.js in development mode:
-
-```bash
+pnpm install
 pnpm dev
 ```
 
-Deploy it to the cloud with [Vercel](https://vercel.com/templates) ([Documentation](https://nextjs.org/docs/app/building-your-application/deploying)).
+生产构建：
+
+```bash
+pnpm build
+```
+
+基于 Next.js、MDX 和 Tailwind CSS 构建。
