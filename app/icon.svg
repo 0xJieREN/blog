@@ -1,13 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" fill="#f2f5f7" />
-  <rect x="7.5" y="7.5" width="49" height="49" fill="none" stroke="#17212b" />
-  <text
-    x="32"
-    y="41"
-    fill="#17212b"
-    font-family="Songti SC, STSong, serif"
-    font-size="29"
-    font-weight="400"
-    text-anchor="middle"
-  >杰</text>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 64 64"
+  role="img"
+  aria-labelledby="icon-title"
+>
+  <title id="icon-title">Jared's Blog</title>
+  <rect x="3" y="3" width="58" height="58" rx="14" fill="#315f7d" />
+  <path
+    d="M28 17h13v21c0 8-5.4 13-14 13-6 0-10.3-2.7-12-7.5"
+    fill="none"
+    stroke="#f7f9fb"
+    stroke-width="7"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
 </svg>

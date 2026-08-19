@@ -3,10 +3,10 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: {
-    absolute: "Jie's Blog",
+    absolute: "Jared's Blog",
   },
   description:
-    'Jie is an independent developer focused on AI and finance, writing about investing, software, AI tools, personal projects, and life.',
+    'Jared is an independent developer focused on AI and finance, writing about investing, software, AI tools, personal projects, and life.',
   alternates: {
     languages: {
       'zh-CN': '/',
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Jie's Blog",
+    title: "Jared's Blog",
     description:
       'An independent developer writing about AI, finance, software, and the occasional observation from everyday life.',
     url: '/en',
@@ -28,7 +28,7 @@ export default function EnglishPage() {
     <div className="home-page english-page" lang="en">
       <section className="hero" aria-labelledby="english-hero-title">
         <h1 id="english-hero-title" className="hero-title">
-          Hi, I’m Jie.
+          Hi, I’m Jared.
         </h1>
         <p className="hero-intro">
           I’m an independent developer focused on AI and finance. I write about

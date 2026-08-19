@@ -24,10 +24,10 @@ export function Navbar() {
       <Link
         className="brand"
         href={isEnglish ? '/en' : '/'}
-        aria-label={isEnglish ? "Jie's homepage" : '杰的个人主页'}
+        aria-label={isEnglish ? "Jared's homepage" : '杰的个人主页'}
       >
         {isEnglish ? (
-          "Jie's Blog"
+          "Jared's Blog"
         ) : (
           <>
             <span className="brand-name">杰</span>

@@ -8,7 +8,7 @@ export default function Footer() {
 
   return (
     <footer className="site-footer" lang={isEnglish ? 'en' : 'zh-CN'}>
-      <p>© {new Date().getFullYear()} {isEnglish ? 'Jie' : '杰'}</p>
+      <p>© {new Date().getFullYear()} {isEnglish ? 'Jared' : '杰'}</p>
       <nav
         className="footer-links"
         aria-label={isEnglish ? 'External links' : '外部链接'}
