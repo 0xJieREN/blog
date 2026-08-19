@@ -4,8 +4,20 @@ import { formatDate, getBlogPosts } from 'app/blog/utils'
 export function BlogPosts() {
   let allBlogs = getBlogPosts()
 
+  if (allBlogs.length === 0) {
+    return (
+      <div className="empty-posts">
+        <span className="post-number">00</span>
+        <div>
+          <h3>第一篇文章，正在路上</h3>
+          <p>内容还在整理。很快，这里会出现一些认真写下的东西。</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div>
+    <div className="post-list">
       {allBlogs
         .sort((a, b) => {
           if (
@@ -15,20 +27,23 @@ export function BlogPosts() {
           }
           return 1
         })
-        .map((post) => (
+        .map((post, index) => (
           <Link
             key={post.slug}
-            className="flex flex-col space-y-1 mb-4"
+            className="post-item"
             href={`/blog/${post.slug}`}
           >
-            <div className="w-full flex flex-col md:flex-row space-x-0 md:space-x-2">
-              <p className="text-neutral-600 dark:text-neutral-400 w-[100px] tabular-nums">
-                {formatDate(post.metadata.publishedAt, false)}
-              </p>
-              <p className="text-neutral-900 dark:text-neutral-100 tracking-tight">
-                {post.metadata.title}
-              </p>
+            <span className="post-number">
+              {String(index + 1).padStart(2, '0')}
+            </span>
+            <div className="post-copy">
+              <h3>{post.metadata.title}</h3>
+              <p>{post.metadata.summary}</p>
             </div>
+            <time dateTime={post.metadata.publishedAt}>
+              {formatDate(post.metadata.publishedAt, false)}
+            </time>
+            <span className="post-arrow" aria-hidden="true">↗</span>
           </Link>
         ))}
     </div>

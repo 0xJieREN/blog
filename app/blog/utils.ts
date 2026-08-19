@@ -27,6 +27,10 @@ function parseFrontmatter(fileContent: string) {
 }
 
 function getMDXFiles(dir) {
+  if (!fs.existsSync(dir)) {
+    return []
+  }
+
   return fs.readdirSync(dir).filter((file) => path.extname(file) === '.mdx')
 }
 
@@ -76,8 +80,8 @@ export function formatDate(date: string, includeRelative = false) {
     formattedDate = 'Today'
   }
 
-  let fullDate = targetDate.toLocaleString('en-us', {
-    month: 'long',
+  let fullDate = targetDate.toLocaleString('zh-CN', {
+    month: '2-digit',
     day: 'numeric',
     year: 'numeric',
   })

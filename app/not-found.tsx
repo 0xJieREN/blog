@@ -1,10 +1,9 @@
 export default function NotFound() {
   return (
-    <section>
-      <h1 className="mb-8 text-2xl font-semibold tracking-tighter">
-        404 - Page Not Found
-      </h1>
-      <p className="mb-4">The page you are looking for does not exist.</p>
+    <section className="page-intro not-found">
+      <p className="eyebrow">404 / Not found</p>
+      <h1>这里什么也没有。</h1>
+      <p>你访问的页面不存在，或许它已经被移走了。</p>
     </section>
   )
 }
