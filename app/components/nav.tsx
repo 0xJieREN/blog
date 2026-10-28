@@ -9,12 +9,8 @@ export function Navbar() {
   const isEnglish = pathname === '/en' || pathname.startsWith('/en/')
 
   const navItems = isEnglish
-    ? [
-        { href: '/en', name: 'Home' },
-        { href: '/', name: '中文', lang: 'zh-CN' },
-      ]
+    ? [{ href: '/', name: '中文', lang: 'zh-CN' }]
     : [
-        { href: '/', name: '首页' },
         { href: '/blog', name: '文章' },
         { href: '/en', name: 'EN', lang: 'en' },
       ]
@@ -22,18 +18,14 @@ export function Navbar() {
   return (
     <header className="site-header" lang={isEnglish ? 'en' : 'zh-CN'}>
       <Link
-        className="brand"
+        className="identity"
         href={isEnglish ? '/en' : '/'}
         aria-label={isEnglish ? "Jared's homepage" : '杰的个人主页'}
       >
-        {isEnglish ? (
-          "Jared's Blog"
-        ) : (
-          <>
-            <span className="brand-name">杰</span>
-            <span className="brand-label">的博客</span>
-          </>
-        )}
+        <span className="identity-name">{isEnglish ? 'Jared' : '杰'}</span>
+        <span className="identity-role">
+          {isEnglish ? 'Independent developer' : '独立开发者'}
+        </span>
       </Link>
       <div className="header-actions">
         <nav
@@ -41,7 +33,12 @@ export function Navbar() {
           aria-label={isEnglish ? 'Main navigation' : '主导航'}
         >
           {navItems.map(({ href, name, lang }) => (
-            <Link key={href} href={href} lang={lang}>
+            <Link
+              key={href}
+              href={href}
+              lang={lang}
+              aria-current={pathname === href ? 'page' : undefined}
+            >
               {name}
             </Link>
           ))}

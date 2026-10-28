@@ -81,7 +81,7 @@ export function formatDate(date: string, includeRelative = false) {
   }
 
   let fullDate = targetDate.toLocaleString('zh-CN', {
-    month: '2-digit',
+    month: 'long',
     day: 'numeric',
     year: 'numeric',
   })
