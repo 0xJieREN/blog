@@ -1,6 +1,6 @@
 import './global.css'
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import type { Metadata, Viewport } from 'next'
+import { Inter, Newsreader } from 'next/font/google'
 import { GeistMono } from 'geist/font/mono'
 import { Navbar } from './components/nav'
 import { Analytics } from '@vercel/analytics/react'
@@ -62,6 +62,22 @@ const inter = Inter({
   display: 'swap',
 })
 
+const newsreader = Newsreader({
+  subsets: ['latin'],
+  style: ['italic'],
+  weight: '400',
+  variable: '--font-newsreader',
+  display: 'swap',
+  preload: false,
+})
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#fdfdfc' },
+    { media: '(prefers-color-scheme: dark)', color: '#111110' },
+  ],
+}
+
 const cx = (...classes) => classes.filter(Boolean).join(' ')
 
 export default function RootLayout({
@@ -72,7 +88,7 @@ export default function RootLayout({
   return (
     <html
       lang="zh-CN"
-      className={cx(inter.variable, GeistMono.variable)}
+      className={cx(inter.variable, newsreader.variable, GeistMono.variable)}
       suppressHydrationWarning
     >
       <head>

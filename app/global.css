@@ -22,6 +22,7 @@
 
   --font-sans: var(--font-inter), 'PingFang SC', 'Hiragino Sans GB',
     'Microsoft YaHei', 'Noto Sans CJK SC', system-ui, sans-serif;
+  --font-italic: var(--font-newsreader), 'Iowan Old Style', Georgia, serif;
   --font-serif: 'Iowan Old Style', 'Songti SC', 'Noto Serif CJK SC', Georgia,
     serif;
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo,
@@ -171,7 +172,7 @@ a {
 /* Shell */
 
 .site-shell {
-  width: min(calc(100% - var(--gutter) * 2), 600px);
+  width: min(calc(100% - var(--gutter) * 2), 640px);
   margin: 0 auto;
 }
 
@@ -319,6 +320,21 @@ a {
   color: var(--foreground);
   font-style: normal;
   font-weight: 500;
+}
+
+/* English copy gets Paco's serif italic for emphasis instead. */
+[lang='en'] .intro em {
+  color: inherit;
+  font-family: var(--font-italic);
+  font-size: 1.0625em;
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* Keep linked words whole: a link split across lines reads as two. */
+.intro a,
+.text a {
+  white-space: nowrap;
 }
 
 .section {
@@ -761,7 +777,7 @@ a {
 
 @media (max-width: 560px) {
   .site-header {
-    padding-top: 56px;
+    padding-top: 64px;
   }
 
   .intro,
