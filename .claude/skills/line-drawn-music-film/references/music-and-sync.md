@@ -110,3 +110,10 @@ notes born at `time`, hand presses, key lights, pendulum swings on `beats`.
   small burst; otherwise they slide in from the edge already travelling.
 - The bass gets its own visual (stones, dots along the bottom), one per bar, landing on the
   downbeat.
+- Notes don't have to ride a staff. Riding a rigid path looked stiff on hair; drifting like
+  seeds read better: leave the source at the moment the note is played, start at a height set
+  by the pitch, then drift with a steady wind, slow lift, a little sway and spin, and fade out
+  after 5-7 s (`flaxen/js/film.js`, `drift`). Start them clear of the character's face.
+- Another way to show a melody, especially an unaccompanied one: draw it as a single pen line
+  whose height is the pitch, with a note head at each turn (`flaxen` shot 1). Smooth the line
+  (0.2 s), ~16 px per semitone.

@@ -13,8 +13,9 @@ frames, ffmpeg adds the audio.
 
 Films made this way in this repo, for worked examples:
 - `goldberg/`: Bach's Aria, bars 1-7 + 32, 35 s, eight shots, notes from a Mutopia score.
-- `flaxen/`: Debussy's "La fille aux cheveux de lin", 32 s, six shots, notes transcribed from
-  the recording (no open score), a melody line drawn as its pitch contour.
+- `flaxen/`: Debussy's "La fille aux cheveux de lin", 81 s, seven slow shots with long
+  dissolves, notes transcribed from the recording (no open score), the opening melody drawn as
+  a pen line, a girl with loose wind-blown hair, notes drifting like seeds.
 
 ## What's in here
 
@@ -44,9 +45,10 @@ Films made this way in this repo, for worked examples:
 
 ### 1. Pin down the brief
 
-Get, or decide sensibly and state: the piece and which part, target length (default ~30 s; the
-first attempt at a full 5-minute piece was not wanted), format (1080x1080, 24 fps), the feeling
-or story, any reference style, and where the project folder goes. If the user is away or says
+Get, or decide sensibly and state: the piece and which part, target length (a fast or
+structural piece: ~30 s; a slow, tender one needs 60-90 s to breathe; a full 5-minute piece was
+not wanted), format (1080x1080, 24 fps), the feeling or story, any reference style, and where
+the project folder goes. If the user is away or says
 "decide for me", choose and say what you chose.
 
 ### 2. Study the reference, if there is one

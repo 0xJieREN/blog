@@ -67,6 +67,16 @@ Run `scripts/study_reference.py` on any of them.
   sky, a construction grid under the drawing.
 - **drawing desk / self-portraits**: still generative images (design sheets, star charts).
 
+## Characters (what worked, what didn't)
+
+- Round faces, big googly eyes, blush, tiny nose: reads as Kevin-like and cute.
+- Hair as one stiff band, or as a five-line staff, read as a braid or a ribbon. Long loose hair
+  works as many overlapping locks: each lock walks from its root along its own angle, curls a
+  little at the tip, and is pushed by a wave that travels from root to tip and grows toward
+  the tip (`flaxen/js/film.js`, `lockPoly`). Fill each lock with crayon and ink only one edge
+  plus a faint middle strand, so it looks like strands, not outlines.
+- A raised single finger reads as rude; small circles next to eyes read as more eyes.
+
 ## Turning this into code (what worked here)
 
 - Canvas 2D, everything redrawn every frame from a time `t`; the page exposes
