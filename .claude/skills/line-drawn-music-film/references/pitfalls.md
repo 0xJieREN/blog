@@ -18,6 +18,9 @@
 | 300 MB file for 5 minutes | noisy textures changing every frame defeat compression | fix the flicker (stable frames compress ~10x better); crf 20 is plenty |
 | Reference site unreachable from the sandbox | network policy | ask the user to allow the host; meanwhile work from notes, and say so |
 | upload.wikimedia.org returns 429 | shared egress rate limit | get the same file from archive.org |
+| IMSLP score/MIDI download stops at a disclaimer | accepting it would be agreeing on the user's behalf | ask the user, or transcribe the recording instead |
+| A melody line full of spikes | transcription ghost notes and a pitch scale that's too steep | drop notes within 0.15 s of the previous one, ~16 px per semitone, smooth the line (0.2 s) |
+| Two hair/staff paths crossing in one shot | a character's own staff plus a scene staff | keep one stream per shot (`noHair`-style switch) |
 | `pkill -f <pattern>` killed the current shell | the pattern matched the command itself | don't pkill by a pattern that appears in your own command line |
 
 Also worth remembering:

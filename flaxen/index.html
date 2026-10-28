@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>la fille aux cheveux de lin</title>
+<style>
+  :root { --paper: #f4efe4; --ink: #27368c; --edge: #e6dfd0; }
+  html, body { margin: 0; height: 100%; background: var(--edge); }
+  body { display: grid; place-items: center; overflow: hidden; font: 15px/1.4 ui-rounded, "SF Pro Rounded", system-ui, sans-serif; color: var(--ink); }
+  #stage { position: relative; width: min(100vw - 32px, 100vh - 32px); aspect-ratio: 1; box-shadow: 0 1px 2px rgba(60, 50, 30, .12), 0 12px 40px rgba(60, 50, 30, .12); }
+  canvas { display: block; width: 100%; height: 100%; background: var(--paper); cursor: pointer; }
+  #play { position: absolute; inset: 0; display: grid; place-items: center; background: none; border: 0; cursor: pointer; color: var(--ink); }
+  #play[hidden] { display: none; }
+  #play span { font-size: 22px; letter-spacing: .02em; padding: 10px 22px; border: 2px solid var(--ink); border-radius: 999px; background: rgba(244, 239, 228, .85); }
+  #bar { position: absolute; left: 0; right: 0; bottom: -18px; height: 18px; cursor: pointer; opacity: 0; transition: opacity .3s; }
+  #stage:hover #bar, #bar.show { opacity: 1; }
+  #bar i { position: absolute; left: 0; top: 8px; height: 2px; background: var(--ink); width: 0; }
+  body.render { background: var(--paper); }
+  body.render #stage { width: 1080px; height: 1080px; box-shadow: none; }
+  body.render #play, body.render #bar { display: none; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="c" width="1080" height="1080" aria-label="A line-drawn film set to music"></canvas>
+  <button id="play" aria-label="Play"><span>▶ la fille</span></button>
+  <div id="bar"><i></i></div>
+</div>
+<audio id="music" src="audio/fille-excerpt.mp3" preload="auto"></audio>
+<script src="js/fonts.js"></script>
+<script src="js/score.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/kit.js"></script>
+<script src="js/film.js"></script>
+<script>
+  const canvas = document.getElementById('c'), audio = document.getElementById('music');
+  const playBtn = document.getElementById('play'), bar = document.getElementById('bar');
+  const params = new URLSearchParams(location.search);
+
+  if (params.has('render')) {
+    // headless rendering: the renderer calls __frame(t) and reads the canvas
+    document.body.classList.add('render');
+    window.__duration = Film.DURATION;
+    window.__frame = (t) => { Film.frame(canvas, t); return true; };
+  } else {
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    function resize() {
+      const w = Math.round(canvas.getBoundingClientRect().width * dpr);
+      if (w && canvas.width !== w) { canvas.width = canvas.height = w; }
+    }
+    addEventListener('resize', resize); resize();
+
+    // the clock is the audio while it plays, then runs on for the closing card
+    let playing = false, clockStart = 0, clockBase = +params.get('t') || 0;
+    const now = () => {
+      if (!playing) return clockBase;
+      if (!audio.ended && !audio.paused) return audio.currentTime;
+      return clockBase + (performance.now() - clockStart) / 1000;
+    };
+    function play() {
+      playing = true; playBtn.hidden = true;
+      if (clockBase < audio.duration - 0.05 || isNaN(audio.duration)) {
+        audio.currentTime = clockBase;
+        audio.play().catch(() => { clockStart = performance.now(); });
+      } else clockStart = performance.now();
+    }
+    function pause() { clockBase = now(); playing = false; audio.pause(); playBtn.hidden = false; }
+    audio.addEventListener('ended', () => { clockBase = audio.duration; clockStart = performance.now(); });
+    playBtn.onclick = play;
+    canvas.onclick = () => (playing ? pause() : play());
+    addEventListener('keydown', (e) => {
+      if (e.code === 'Space') { e.preventDefault(); playing ? pause() : play(); }
+      if (e.code === 'ArrowRight' || e.code === 'ArrowLeft') {
+        const t = Math.max(0, Math.min(Film.DURATION, now() + (e.code === 'ArrowRight' ? 10 : -10)));
+        seek(t);
+      }
+    });
+    function seek(t) {
+      clockBase = t; clockStart = performance.now();
+      if (t < audio.duration) audio.currentTime = t;
+      if (playing && t < audio.duration && audio.paused) audio.play();
+    }
+    bar.onclick = (e) => { const r = bar.getBoundingClientRect(); seek(((e.clientX - r.left) / r.width) * Film.DURATION); };
+
+    let last = -1;
+    (function loop() {
+      resize();
+      let t = now();
+      if (t >= Film.DURATION) { t = Film.DURATION; if (playing) { playing = false; clockBase = 0; playBtn.hidden = false; } }
+      const f = Math.floor(t * 24) / 24; // drawn on 24 frames a second
+      if (f !== last) { Film.frame(canvas, f); last = f; bar.firstChild.style.width = (100 * t / Film.DURATION) + '%'; }
+      requestAnimationFrame(loop);
+    })();
+  }
+</script>
+</body>
+</html>

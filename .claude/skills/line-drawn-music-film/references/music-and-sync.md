@@ -12,6 +12,14 @@ Prefer recordings that are public domain / CC0 so the film can be posted anywher
   (`commons.wikimedia.org/w/api.php?action=query&list=search&srnamespace=6&srsearch=...`).
 - archive.org `advancedsearch.php?q=<terms>&fl[]=identifier&fl[]=licenseurl&output=json` shows
   licences directly.
+- **IMSLP** work pages (`imslp.org/wiki/<Work>_(<Composer>)`) list many recordings with their
+  licence under each file ("Copyright ..."). Fetch the page HTML; each recording's direct mp3
+  URL (`*.imslp.org/files/imglnks/usimg/...mp3`) is in the page and downloads without a gate.
+  Score PDFs and MIDI files sit behind a disclaimer page: accepting it is the user's call, so ask
+  them rather than clicking through.
+- Licences: CC0, public domain, CC BY and CC BY-SA allow a film (BY-SA: the film takes the same
+  licence). NC/ND recordings (common for performers' own uploads) are out: a synced film is a
+  derivative. "Public Domain - Non-PD US" means PD in the EU only; avoid it for a web post.
 
 upload.wikimedia.org rate-limits shared egress IPs (HTTP 429 even with a proper User-Agent).
 When that happens, look for the same recording on archive.org instead of retrying.
@@ -30,11 +38,21 @@ Notes on the staff should be the real notes, not decoration. Get a MIDI of the p
 
 ### No score?
 
-For a recording with no MIDI (a song, the user's own playing), the notes can still follow the
-music: use the onsets in `timing.json` (time, strength, pitch class) as the notes, put them on
-the staff by pitch class (or by `librosa.pyin` pitch for a single melodic line), size them by
-strength, and keep the constant travel speed so spacing still shows rhythm. Say that heights
-are estimated. Bar lines still come from `analyze_audio.py` (give `--bar-seconds`).
+Transcribe the recording: `scripts/transcribe.py audio.wav js/score.js --segments "a0:a1,b0:b1"
+--cuts "<shot starts>" [--flats]`. It runs basic-pitch's ONNX model (piano transcription is
+good), keeps the notes inside the excerpt's segments, maps them to film time, and takes the
+top note of each attack as the melody. Install without TensorFlow:
+`pip install setuptools wheel && pip install --no-deps basic-pitch && pip install onnxruntime
+librosa pretty_midi mir_eval resampy`.
+
+- Read the printed melody against the music you know (the Debussy opening came out as
+  Db Bb Gb Eb Gb Bb Db, spelled with sharps until `--flats`).
+- Transcriptions carry ghost notes (a weaker note a few hundredths after a real one, or an
+  overtone). Filter them where it matters, e.g. ignore notes within 0.15 s of the previous one
+  when drawing a melody contour.
+- Without a score, cut on the music's events (the first chord, the start of a run, the peak
+  note) taken from the transcription instead of on bar lines; in rubato music that's what the
+  ear hears as the beat anyway.
 
 ## Choosing the excerpt (about 30 seconds)
 
