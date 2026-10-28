@@ -1,6 +1,6 @@
 import './global.css'
 import type { Metadata } from 'next'
-import { GeistSans } from 'geist/font/sans'
+import { Inter } from 'next/font/google'
 import { GeistMono } from 'geist/font/mono'
 import { Navbar } from './components/nav'
 import { Analytics } from '@vercel/analytics/react'
@@ -55,6 +55,12 @@ export const metadata: Metadata = {
   },
 }
 
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+})
+
 const cx = (...classes) => classes.filter(Boolean).join(' ')
 
 export default function RootLayout({
@@ -65,13 +71,13 @@ export default function RootLayout({
   return (
     <html
       lang="zh-CN"
-      className={cx(GeistSans.variable, GeistMono.variable)}
+      className={cx(inter.variable, GeistMono.variable)}
       suppressHydrationWarning
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body className="antialiased">
+      <body>
         <div className="site-shell">
           <Navbar />
           <main className="site-main">{children}</main>
