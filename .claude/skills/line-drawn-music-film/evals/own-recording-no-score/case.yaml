@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: own-recording-no-score
+expected_outcome: |
+  Uses the onset-based fallback (no score): notes appear on the recording's onsets with estimated heights, says that heights are estimated, picks a ~25 s excerpt ending at a natural point, renders a square mp4 with no flicker frames, and explains the choices.
