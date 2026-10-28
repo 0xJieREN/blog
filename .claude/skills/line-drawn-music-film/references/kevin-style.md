@@ -70,11 +70,15 @@ Run `scripts/study_reference.py` on any of them.
 ## Characters (what worked, what didn't)
 
 - Round faces, big googly eyes, blush, tiny nose: reads as Kevin-like and cute.
-- Hair as one stiff band, or as a five-line staff, read as a braid or a ribbon. Long loose hair
-  works as many overlapping locks: each lock walks from its root along its own angle, curls a
-  little at the tip, and is pushed by a wave that travels from root to tip and grows toward
-  the tip (`flaxen/js/film.js`, `lockPoly`). Fill each lock with crayon and ink only one edge
-  plus a faint middle strand, so it looks like strands, not outlines.
+- Hair as one stiff band, or as a five-line staff, read as a braid or a ribbon. Thick crayon
+  locks read as coarse, and hair drawn as a separate cap looked stuck on, not attached. What
+  worked: ~70 fine strands, each starting at the parting, following the skull ellipse (a
+  quadratic curve bowed just outside the head outline) to an exit point on the rim, and only
+  then hanging free (`flaxen/js/film.js`, `STRANDS`). The free part curls a little at the tip and
+  carries a wave that travels from root to tip and grows toward the tip, with neighbouring
+  strands in phase so the hair moves as one sheet. Draw a faint wide flax underlay, then 1 px
+  brown strands with an occasional navy one; on the head, where strands crowd, draw them
+  thinner and lighter. Fill the crown between the head outline and the innermost strands.
 - A raised single finger reads as rude; small circles next to eyes read as more eyes.
 
 ## Turning this into code (what worked here)

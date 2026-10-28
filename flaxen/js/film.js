@@ -80,54 +80,70 @@
     nose: stroke(pts.curve([[-18, 30], [-24, 46], [-14, 50]]), { wobble: 0.3 }),
     smile: stroke(pts.curve([[-30, 78], [-14, 86], [4, 79]]), { wobble: 0.3 }),
     neck: group([[[-36, 118], [-40, 178]], [[34, 112], [40, 172]]]),
-    shoulders: group([pts.curve([[-40, 176], [-120, 196], [-176, 236], [-196, 300]]), pts.curve([[40, 172], [118, 190], [176, 232], [198, 300]]),
+    shoulders: group([pts.curve([[-40, 176], [-120, 196], [-176, 236], [-200, 330], [-204, 420]]), pts.curve([[40, 172], [118, 190], [176, 232], [200, 330], [204, 420]]),
       pts.curve([[-40, 176], [-20, 200], [0, 206], [20, 200], [40, 172]])]),
-    dress: [[-40, 178], [40, 172], [118, 190], [176, 232], [200, 330], [-200, 330], [-176, 236], [-120, 196]],
+    dress: [[-40, 178], [40, 172], [118, 190], [176, 232], [200, 330], [204, 430], [-204, 430], [-200, 330], [-176, 236], [-120, 196]],
     collar: [[-40, 178], [-20, 202], [0, 208], [20, 202], [40, 172], [10, 190], [-10, 192]],
-    // the crown of the hair, parted in the middle, framing the face
-    crown: pts.curve([[-112, -20], [-118, -96], [-70, -152], [-6, -166], [62, -156], [112, -104], [124, -20], [110, 20], [96, -40], [60, -92], [4, -118], [-46, -100], [-92, -50], [-112, -20]], 6),
-    part: stroke(pts.curve([[-6, -166], [-2, -140], [4, -118]]), { wobble: 0.3 }),
   };
-  // locks of hair: rooted on the head, swaying in a travelling wave that grows toward the tips
-  const LOCKS = [
-    // [root x, root y, angle, length, width, phase, amplitude, curl]
-    // back hair: many overlapping locks falling down and back, lifted by the breeze
-    [70, -140, 0.55, 470, 46, 0.0, 30, 0.5], [96, -112, 0.66, 500, 48, 0.5, 34, 0.6], [112, -76, 0.78, 520, 48, 1.0, 36, 0.4],
-    [122, -36, 0.9, 500, 46, 1.6, 34, 0.6], [126, 4, 1.0, 470, 44, 2.1, 30, 0.5], [120, 44, 1.1, 430, 42, 2.7, 28, 0.7],
-    [108, 80, 1.2, 380, 38, 3.2, 24, 0.5], [84, -132, 0.6, 430, 36, 3.7, 32, 0.8], [118, -10, 0.85, 540, 34, 4.3, 38, 0.3],
-    // front: two soft locks on either side of the face, falling over the shoulders
-    [-104, -30, 1.68, 300, 30, 0.4, 10, -0.5], [-92, 20, 1.62, 250, 22, 1.1, 8, -0.3], [104, -10, 1.48, 290, 28, 1.9, 12, 0.5],
-  ];
-  const BACK = 9;
-  function lockPoly(L, t, wind) {
-    const [x0, y0, ang, len, w, ph, amp, curl] = L, N = 30, left = [], right = [], mid = [];
-    let cx = x0, cy = y0;
-    for (let i = 0; i <= N; i++) {
-      // soft S-waves along the lock, stronger toward the tip, so loose hair never runs straight
-      const s = i / N, a = ang + (0.1 + 0.22 * s) * Math.sin(s * 6.2 + ph) + curl * Math.pow(s, 3);
-      // the breeze: a wave travelling from root to tip, growing toward the tip
-      const sway = amp * wind * Math.pow(s, 1.6) * Math.sin(Math.PI * 2 * 0.22 * t - 3.0 * s + ph);
-      // walk along the lock so the angle (and the curl at the tip) bends it smoothly
-      if (i) { cx += Math.cos(a) * len / N; cy += Math.sin(a) * len / N; }
-      const px = cx - Math.sin(a) * sway, py = cy + Math.cos(a) * sway;
-      const half = (w / 2) * Math.pow(1 - s, 0.7) + 1.2;
-      left.push([px - Math.sin(a) * half, py + Math.cos(a) * half]);
-      right.push([px + Math.sin(a) * half, py - Math.cos(a) * half]);
-      mid.push([px, py]);
-    }
-    return { poly: left.concat(right.slice().reverse()), left, right, mid };
+
+  // ---- hair: about seventy fine strands, each growing from the parting, following the shape
+  // of the head, and only then falling: over the shoulder on the face side, and behind her,
+  // lifted by the breeze, on the other. So the hair and the head are one shape.
+  const SKULL = { cx: 0, cy: -16, rx: 116, ry: 150 };
+  const rim = (phi, k = 1) => [SKULL.cx + Math.cos(phi) * SKULL.rx * k, SKULL.cy + Math.sin(phi) * SKULL.ry * k];
+  const partAt = (f) => [-6 + 3 * f, lerp(-166, -116, f)];
+  const HAIR_INK = '#8d6a35';
+  const r2 = rng(23);
+  const STRANDS = [];
+  // [side, f in 0..1 (0 = outermost, 1 = along the hairline), exit angle on the head, tail angle, tail length]
+  for (let k = 0; k < 26; k++) { const f = k / 25; STRANDS.push({ side: -1, f, exit: lerp(-2.05, -3.18, f), a0: lerp(1.66, 1.74, r2()), len: 230 + 90 * r2(), ph: 0.4 + f * 1.6, amp: 7, curl: -0.25 - 0.2 * r2() }); }
+  for (let k = 0; k < 46; k++) { const f = k / 45; STRANDS.push({ side: 1, f, exit: lerp(-1.15, 0.72, f), a0: lerp(0.62, 1.38, f) + (r2() - 0.5) * 0.1, len: lerp(430, 360, f) + 50 * r2(), ph: f * 2.4, amp: lerp(30, 20, f), curl: 0.18 + 0.2 * r2() }); }
+  // the part of a strand that lies on the head: from the parting, bowed out to the rim
+  for (const st of STRANDS) {
+    const P = partAt(st.f), E = rim(st.exit, 1.02), mid = (Math.atan2(P[1] - SKULL.cy, P[0]) + st.exit) / 2;
+    const Cc = rim(st.side < 0 ? lerp(-1.75, -2.6, st.f) : lerp(-1.3, -0.4, st.f), lerp(1.06, 0.9, st.f));
+    st.head = [];
+    for (let i = 0; i <= 14; i++) { const u = i / 14; st.head.push([(1 - u) * (1 - u) * P[0] + 2 * u * (1 - u) * Cc[0] + u * u * E[0], (1 - u) * (1 - u) * P[1] + 2 * u * (1 - u) * Cc[1] + u * u * E[1]]); }
   }
-  function drawLock(ctx, L, t, wind, i, prog, s) {
-    const { poly, left, right, mid } = lockPoly(L, t, wind);
-    crayon(poly, i % 3 === 1 ? FLAX_DEEP : FLAX, { prog, alpha: 0.9, dx: 2, dy: -1, seed: 300 + i });
-    if (prog <= 0) return;
-    const n = Math.max(2, Math.round(left.length * prog));
-    ctx.strokeStyle = Pen.INK; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-    // a few strands, not an outline: the edge on one side and a fine line through the middle
-    for (const [line, w, al] of [[right, 1.6, 0.7], [mid, 1.0, 0.35]]) {
-      ctx.globalAlpha = al; ctx.lineWidth = w / Math.sqrt(s);
-      ctx.beginPath(); line.slice(0, n).forEach(([x, y], j) => (j ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke();
+  // the part that hangs free, moving with the breeze; neighbouring strands move together
+  function strandTail(st, t, wind) {
+    const N = 30, out = [];
+    let [x, y] = st.head[st.head.length - 1];
+    for (let i = 0; i <= N; i++) {
+      const s = i / N, a = st.a0 + (0.08 + 0.2 * s) * Math.sin(s * 6 + st.ph) + st.curl * Math.pow(s, 3);
+      if (i) { x += Math.cos(a) * st.len / N; y += Math.sin(a) * st.len / N; }
+      const sway = st.amp * wind * Math.pow(s, 1.6) * Math.sin(Math.PI * 2 * 0.22 * t - 3 * s + st.ph);
+      out.push([x - Math.sin(a) * sway, y + Math.cos(a) * sway]);
     }
+    return out;
+  }
+  // the crown: between the outline of the head and the hairline traced by the innermost strands
+  const innerL = STRANDS.find((x) => x.side < 0 && x.f === 1).head, innerR = STRANDS.find((x) => x.side > 0 && x.f === 1).head;
+  const CROWN = [];
+  for (let phi = -3.18; phi <= 0.72; phi += 0.05) CROWN.push(rim(phi, 1.02));
+  CROWN.push(...innerR.slice().reverse(), ...innerL);
+  function polyline(ctx, P, upto) {
+    const n = Math.max(2, Math.round(P.length * upto));
+    ctx.beginPath(); for (let i = 0; i < n; i++) i ? ctx.lineTo(P[i][0], P[i][1]) : ctx.moveTo(P[i][0], P[i][1]); ctx.stroke();
+  }
+  // soft colour underneath, then the strands themselves
+  function drawStrands(ctx, list, part, t, wind, R, s) {
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    const paths = list.map((st) => (part === 'head' ? st.head : strandTail(st, t, st.side < 0 ? wind * 0.5 : wind)));
+    ctx.strokeStyle = FLAX; ctx.globalAlpha = 0.16; ctx.lineWidth = 16;
+    paths.forEach((P, i) => { const pr = R(0.25 + list[i].f * 0.3, 1.1 + list[i].f * 0.3); if (pr > 0) polyline(ctx, P, pr); });
+    const thin = 1 / Math.pow(s, 0.7);
+    paths.forEach((P, i) => {
+      const st = list[i], pr = R(0.25 + st.f * 0.3, 1.1 + st.f * 0.3);
+      if (pr <= 0) return;
+      const edge = st.f === 0 || st.f === 1, navy = edge || (Math.round(st.f * 45) % 5 === 0);
+      // on the head the strands crowd together, so draw them lighter there
+      const onHead = part === 'head', dark = edge && !(onHead && st.f === 1 && st.side > 0);
+      ctx.strokeStyle = dark || (navy && !onHead) ? Pen.INK : HAIR_INK;
+      ctx.globalAlpha = dark ? 0.8 : onHead ? 0.42 : navy ? 0.45 : 0.65;
+      ctx.lineWidth = (dark ? 1.7 : onHead ? 0.8 : navy ? 1.1 : 0.9) * thin;
+      polyline(ctx, P, pr);
+    });
     ctx.globalAlpha = 1;
   }
   // where her mouth is, for notes to come from
@@ -137,7 +153,8 @@
     const wind = o.wind == null ? 1 : o.wind;
     ctx.save(); ctx.translate(o.x, o.y); ctx.scale(o.s, o.s);
     const W = 3 / Math.sqrt(o.s);
-    LOCKS.slice(0, BACK).forEach((L, i) => drawLock(ctx, L, t, wind, i, R(0.3 + i * 0.06, 1.3 + i * 0.06), o.s));
+    const back = STRANDS.filter((x) => x.side > 0), front = STRANDS.filter((x) => x.side < 0);
+    drawStrands(ctx, back, 'tail', t, wind, R, o.s);
     crayon(G.dress, DRESS, { prog: R(0.5, 1.0), dx: 5, dy: -3, seed: 64 });
     crayon(G.collar, Pen.PAPER, { prog: R(0.7, 1.0), dx: 0, dy: 0, alpha: 1, seed: 65 });
     inkGroup(G.shoulders, R(0.4, 0.8), { w: W * 0.9 });
@@ -164,11 +181,11 @@
       ctx.strokeStyle = Pen.INK; ctx.lineWidth = W * 0.7; ctx.globalAlpha = Math.min(1, sing * 1.5);
       ctx.beginPath(); ctx.moveTo(-26, 81); ctx.quadraticCurveTo(-14, 82 + 9 * sing, 0, 81); ctx.stroke(); ctx.globalAlpha = 1;
     }
-    // crown and the locks in front of the shoulders
-    crayon(G.crown, FLAX, { prog: R(0.2, 0.7), dx: 3, dy: -2, seed: 66 });
-    ink(stroke(G.crown, { seed: 67, wobble: 1.2 }), { prog: R(0.2, 0.6), w: W * 0.9 });
-    ink(G.part, { prog: R(0.5, 0.6), w: W * 0.7 });
-    LOCKS.slice(BACK).forEach((L, i) => drawLock(ctx, L, t, wind * 0.6, BACK + i, R(0.4 + i * 0.1, 1.2 + i * 0.1), o.s));
+    // the hair on the head, the parting, and the strands that fall in front of her shoulder
+    crayon(CROWN, FLAX, { prog: R(0.2, 0.8), dx: 2, dy: -1, alpha: 0.75, seed: 66 });
+    drawStrands(ctx, back, 'head', t, wind, R, o.s);
+    drawStrands(ctx, front, 'head', t, wind, R, o.s);
+    drawStrands(ctx, front, 'tail', t, wind, R, o.s);
     // a sprig of alfalfa behind her ear
     for (let j = 0; j < 5; j++) crayonEllipse(104 + Math.cos(j * 1.26) * 9, -78 + Math.sin(j * 1.26) * 8, 7, 7, ALFALFA, { prog: R(0.9, 1.1), dx: 0, dy: 0, seed: 70 + j });
     ctx.restore();
