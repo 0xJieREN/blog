@@ -1,6 +1,19 @@
 @import 'tailwindcss';
 
 /*
+ * Quotes, dashes and ellipses are shared by Latin and Chinese, so Inter
+ * would draw them narrow inside Chinese text. Route just those code points
+ * to the system Chinese font; English pages skip this face (see below).
+ */
+@font-face {
+  font-family: 'CJK Punctuation';
+  src: local('PingFang SC'), local('Hiragino Sans GB'),
+    local('Noto Sans CJK SC'), local('Source Han Sans SC'),
+    local('Microsoft YaHei'), local('WenQuanYi Zen Hei');
+  unicode-range: U+2014, U+2018, U+2019, U+201C, U+201D, U+2026;
+}
+
+/*
  * Tokens follow the sites this design is based on:
  * - Greys are Radix "sand" (Emil Kowalski's palette), so the neutrals lean
  *   slightly warm instead of blue.
@@ -20,7 +33,8 @@
   --foreground: #21201c;
   --selection: #e2e1de;
 
-  --font-sans: var(--font-inter), 'PingFang SC', 'Hiragino Sans GB',
+  --font-latin: var(--font-inter), system-ui, sans-serif;
+  --font-sans: 'CJK Punctuation', var(--font-inter), 'PingFang SC', 'Hiragino Sans GB',
     'Microsoft YaHei', 'Noto Sans CJK SC', system-ui, sans-serif;
   --font-italic: var(--font-newsreader), 'Iowan Old Style', Georgia, serif;
   --font-serif: 'Iowan Old Style', 'Songti SC', 'Noto Serif CJK SC', Georgia,
@@ -322,6 +336,10 @@ a {
   font-weight: 500;
 }
 
+[lang='en'] {
+  font-family: var(--font-latin);
+}
+
 /* English copy gets Paco's serif italic for emphasis instead. */
 [lang='en'] .intro em {
   color: inherit;
@@ -439,9 +457,47 @@ a {
 
 .post-empty {
   margin: 0;
-  padding: 12px 0;
-  border-top: 1px solid var(--line);
   color: var(--secondary);
+}
+
+/* Homepage list (Emil's): title over summary, a soft block on hover. */
+
+.featured-list {
+  display: flex;
+  margin: 0 -16px;
+  padding: 0;
+  flex-direction: column;
+  gap: 4px;
+  list-style: none;
+}
+
+.featured-link {
+  display: flex;
+  padding: 12px 16px;
+  flex-direction: column;
+  border-radius: 6px;
+  line-height: 24px;
+  transition: background-color 240ms var(--ease);
+}
+
+.featured-title {
+  color: var(--foreground);
+}
+
+.featured-summary {
+  color: var(--secondary);
+  text-autospace: normal;
+}
+
+@media (hover: hover) {
+  .featured-link:hover {
+    background: var(--hover);
+    transition: none;
+  }
+}
+
+.featured-link:active {
+  background: var(--hover);
 }
 
 /* Archive / 404 */
@@ -516,9 +572,9 @@ a {
 
 .article-header h1 {
   margin: 0;
-  font-size: inherit;
+  font-size: 17px;
   font-weight: 600;
-  line-height: var(--line-height);
+  line-height: 30px;
 }
 
 .article-meta {
@@ -527,9 +583,18 @@ a {
   font-variant-numeric: tabular-nums;
 }
 
+/*
+ * Long-form Chinese reads better a step up from the UI text: at 17px a
+ * 640px column holds about 37 characters, close to the ~70 Latin
+ * characters Emil's and Paco's articles run to. text-autospace adds the
+ * thin gap between Chinese and Latin that the writing itself often omits.
+ */
 .prose {
+  --prose-line: 30px;
   color: var(--text);
-  line-height: 1.8;
+  font-size: 17px;
+  line-height: var(--prose-line);
+  text-autospace: normal;
 }
 
 .prose > :first-child {
@@ -537,7 +602,7 @@ a {
 }
 
 .prose p {
-  margin: 0 0 var(--line-height);
+  margin: 0 0 var(--prose-line);
 }
 
 .prose strong {
@@ -554,7 +619,7 @@ a {
   color: var(--foreground);
   font-size: inherit;
   font-weight: 600;
-  line-height: var(--line-height);
+  line-height: var(--prose-line);
 }
 
 .prose h3,
@@ -581,7 +646,7 @@ a {
 
 .prose ul,
 .prose ol {
-  margin: 0 0 var(--line-height);
+  margin: 0 0 var(--prose-line);
   padding-left: 1.25em;
 }
 
@@ -628,7 +693,7 @@ a {
 
 .prose pre {
   overflow-x: auto;
-  margin: 0 0 var(--line-height);
+  margin: 0 0 var(--prose-line);
   padding: 16px 18px;
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -664,7 +729,7 @@ a {
 .prose img {
   max-width: 100%;
   height: auto;
-  margin: 14px 0 var(--line-height);
+  margin: 14px 0 var(--prose-line);
   border-radius: 10px;
   outline: 1px solid rgba(0, 0, 0, 0.06);
   outline-offset: -1px;
@@ -678,7 +743,7 @@ a {
   display: block;
   overflow-x: auto;
   max-width: 100%;
-  margin: 0 0 var(--line-height);
+  margin: 0 0 var(--prose-line);
   border-collapse: collapse;
   font-size: 14px;
   font-variant-numeric: tabular-nums;

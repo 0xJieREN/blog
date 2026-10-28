@@ -11,18 +11,52 @@ function formatMonthDay(date: Date) {
   return `${month}.${day}`
 }
 
-export function BlogPosts({ limit }: { limit?: number }) {
-  let posts = getBlogPosts()
+function getSortedPosts(limit?: number) {
+  return getBlogPosts()
     .map((post) => ({ ...post, date: toDate(post.metadata.publishedAt) }))
     .sort((a, b) => b.date.getTime() - a.date.getTime())
     .slice(0, limit)
+}
+
+function EmptyPosts() {
+  return (
+    <p className="post-empty">
+      这里暂时还是空的。第一篇文章正在整理，很快会有一些认真写下的东西。
+    </p>
+  )
+}
+
+// Homepage list: a few recent posts with their one-line summary, the way
+// Emil's and Paco's homepages introduce writing. Dates live in the archive.
+export function FeaturedPosts({ limit }: { limit: number }) {
+  let posts = getSortedPosts(limit)
 
   if (posts.length === 0) {
-    return (
-      <p className="post-empty">
-        这里暂时还是空的。第一篇文章正在整理，很快会有一些认真写下的东西。
-      </p>
-    )
+    return <EmptyPosts />
+  }
+
+  return (
+    <ul className="featured-list">
+      {posts.map((post) => (
+        <li key={post.slug}>
+          <Link className="featured-link" href={`/blog/${post.slug}`}>
+            <span className="featured-title">{post.metadata.title}</span>
+            {post.metadata.summary && (
+              <span className="featured-summary">{post.metadata.summary}</span>
+            )}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+// Archive list: every post, grouped by year, title and date only.
+export function BlogPosts() {
+  let posts = getSortedPosts()
+
+  if (posts.length === 0) {
+    return <EmptyPosts />
   }
 
   return (
