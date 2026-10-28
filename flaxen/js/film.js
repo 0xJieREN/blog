@@ -155,6 +155,12 @@
     const W = 3 / Math.sqrt(o.s);
     const back = STRANDS.filter((x) => x.side > 0), front = STRANDS.filter((x) => x.side < 0);
     drawStrands(ctx, back, 'tail', t, wind, R, o.s);
+    // body: paper first too, so the field behind her doesn't show through
+    if (R(0.3, 0.31) > 0) {
+      ctx.fillStyle = Pen.PAPER; ctx.beginPath();
+      [[-40, 120], [40, 116], ...G.dress.slice(1)].forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
+      ctx.closePath(); ctx.fill();
+    }
     crayon(G.dress, DRESS, { prog: R(0.5, 1.0), dx: 5, dy: -3, seed: 64 });
     crayon(G.collar, Pen.PAPER, { prog: R(0.7, 1.0), dx: 0, dy: 0, alpha: 1, seed: 65 });
     inkGroup(G.shoulders, R(0.4, 0.8), { w: W * 0.9 });
@@ -247,6 +253,18 @@
     inkGroup(field.grass, R(0.5, 1.5), { w: 1.8, alpha: 0.8 });
     for (const f of FLOWERS) flower(ctx, f, t);
   }
+  // the meadow in front of her: drawn again over her lower half, so she stands in the flowers
+  function meadowFront(ctx, t, reveal) {
+    const R = (a, b) => seg(t, reveal + a, reveal + b);
+    ctx.save(); ctx.beginPath(); ctx.moveTo(150, 1000);
+    for (let x = 150; x <= 600; x += 10) ctx.lineTo(x, 656 + 5 * Math.sin(x / 23) + 3 * Math.sin(x / 9));
+    ctx.lineTo(600, 1000); ctx.closePath(); ctx.clip();
+    ctx.fillStyle = Pen.PAPER; ctx.fillRect(150, 600, 450, 400);
+    crayon([[-80, 618], [1160, 606], [1160, 900], [-80, 900]], C.green, { prog: R(0.3, 1.2), alpha: 0.34, dx: 0, dy: 0, seed: 71 });
+    inkGroup(field.grass, R(0.5, 1.5), { w: 1.8, alpha: 0.8 });
+    for (const f of FLOWERS) flower(ctx, f, t);
+    ctx.restore();
+  }
   function sun(ctx, x, y, rad, t, rays, glow) {
     if (glow > 0) {
       const g = ctx.createRadialGradient(x, y, rad * 0.5, x, y, rad * 4);
@@ -302,6 +320,7 @@
     crayon([[-100, -100], [1200, -100], [1200, 640], [-100, 640]], SKY, { alpha: 0.2, dx: 0, dy: 0, seed: 76 });
     fieldLayer(ctx, t, B[2] - 1.2);
     girl(ctx, t, Object.assign({}, FIELD_GIRL, { sing: true, wind: 0.8 }));
+    meadowFront(ctx, t, B[2] - 1.2);
     drift(ctx, between(mel, B[2] - 2, B[3] + 1), t, mouthOf(FIELD_GIRL), { life: 6.5, wind: -34, scale: 0.6, pitchScale: 4, lift: 24, ox: -24 });
   }
 
@@ -327,6 +346,7 @@
     crayon([[-100, -300], [1200, -300], [1200, 640], [-100, 640]], SKY, { alpha: 0.24, dx: 0, dy: 0, seed: 77 });
     fieldLayer(ctx, t, -10, { cloudDrift: 1 });
     girl(ctx, t, Object.assign({}, FIELD_GIRL, { open: 1, look: [0.5, -0.8], wind: 0.8 }));
+    meadowFront(ctx, t, -10);
     drift(ctx, LARK_NOTES, t, (n) => { const p = larkPos(n.t); return [p[0] + 30, p[1]]; }, { life: 5, wind: 40, lift: 4, scale: 0.8, pitchScale: 0 });
     lark(ctx, lx, ly, t, 1.5);
   }
@@ -367,6 +387,7 @@
     ctx.restore();
     fieldLayer(ctx, t, -10);
     girl(ctx, t, Object.assign({}, FIELD_GIRL, { open: 1, look: [0.8, -0.5], wind: 1 }));
+    meadowFront(ctx, t, -10);
     drift(ctx, RISE, t, mouthOf(FIELD_GIRL), { life: 6, wind: 56, lift: 30, scale: 0.75, pitchScale: 6, ox: 20, oy: -20 });
   }
 
@@ -385,6 +406,7 @@
     sun(ctx, 720, 330, 108, t, RISE.length * 1.2, 1);
     fieldLayer(ctx, t, -10, { cloudDrift: 0.6 });
     girl(ctx, t, Object.assign({}, FIELD_GIRL, { open: 1 - smooth(seg(t, 76, 78.5)), look: [0.6, -0.6], wind: lerp(1, 0.4, seg(t, B[6], DURATION)) }));
+    meadowFront(ctx, t, -10);
     drift(ctx, between(mel, B[6] - 2, DURATION), t, mouthOf(FIELD_GIRL), { life: 7, wind: 34, lift: 24, scale: 0.7, pitchScale: 5, ox: 20, oy: -20 });
   }
 
