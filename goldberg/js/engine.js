@@ -1,6 +1,7 @@
 // A tiny pen-and-crayon kit. Everything on the sheet is drawn through these few calls:
 // ink() for ballpoint lines, guide() for pale construction lines, crayon() for waxy fills,
 // write() for handwriting, all revealed progressively and redrawn every frame.
+// Wax never re-randomises between frames; ink only drifts slowly, so nothing strobes.
 (function () {
   const INK = '#27368c';
   const GUIDE = '#93acdf';
@@ -96,8 +97,8 @@
   };
 
   // ---------- drawing ----------
-  let ctx = null, frameVariant = 0;
-  function begin(c, variant) { ctx = c; frameVariant = variant; }
+  let ctx = null, clock = 0;
+  function begin(c, time) { ctx = c; clock = time; }
   // skip anything whose box lands outside the canvas under the current transform
   function offscreen(b) {
     const m = ctx.getTransform(), W = ctx.canvas.width, H = ctx.canvas.height;
@@ -109,17 +110,17 @@
     return x1 < -20 || y1 < -20 || x0 > W + 20 || y0 > H + 20;
   }
 
-  // Ballpoint line. prog reveals it along its length; boil re-jitters it on twos.
+  // Ballpoint line. prog reveals it along its length; the line drifts a fraction of a pixel over time.
   function ink(s, o = {}) {
     const prog = o.prog == null ? 1 : o.prog;
     if (prog <= 0 || offscreen(s.box)) return;
-    const w = o.w || 3.2, boil = o.boil != null ? o.boil : 0.55;
-    const end = prog * s.L, v = frameVariant;
+    const w = o.w || 3.2, boil = o.boil != null ? o.boil : 0.4;
+    const end = prog * s.L, v = clock * 0.6;
     ctx.strokeStyle = o.color || INK;
     ctx.globalAlpha = o.alpha == null ? 0.94 : o.alpha;
     ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-    const X = (i) => s.xs[i] + s.nx[i] * boil * noise(s.len[i] / 30 + v * 17.3, s.seed + 3);
-    const Y = (i) => s.ys[i] + s.ny[i] * boil * noise(s.len[i] / 30 + v * 17.3, s.seed + 3);
+    const X = (i) => s.xs[i] + s.nx[i] * boil * noise(s.len[i] / 40 + v, s.seed + 3);
+    const Y = (i) => s.ys[i] + s.ny[i] * boil * noise(s.len[i] / 40 + v, s.seed + 3);
     const CH = 7;
     for (let i = 0; i < s.N - 1 && s.len[i] < end; i += CH) {
       const mid = s.len[Math.min(s.N - 1, i + (CH >> 1))];
@@ -160,10 +161,10 @@
 
   // ---------- crayon ----------
   const patterns = {};
-  function crayonTile(color, variant) {
+  function crayonTile(color) {
     const S = 220, c = document.createElement('canvas');
     c.width = c.height = S;
-    const g = c.getContext('2d'), r = rng(hashStr(color) + variant * 101);
+    const g = c.getContext('2d'), r = rng(hashStr(color));
     g.strokeStyle = color; g.lineCap = 'round';
     for (let i = 0; i < 1500; i++) {
       const x = r() * S, y = r() * S, a = -0.6 + (r() - 0.5) * 0.7, l = 5 + r() * 14;
@@ -182,10 +183,8 @@
   }
   function hashStr(s) { let h = 7; for (const ch of s) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return h >>> 0; }
   function pattern(color) {
-    const v = frameVariant;
-    const key = color + v;
-    if (!patterns[key]) patterns[key] = ctx.createPattern(crayonTile(color, v), 'repeat');
-    return patterns[key];
+    if (!patterns[color]) patterns[color] = ctx.createPattern(crayonTile(color), 'repeat');
+    return patterns[color];
   }
   // Fill a polygon with crayon. prog sweeps the scribble in from one side.
   // The fill is nudged off the ink outline, the way crayon never quite meets the pen line.
@@ -200,7 +199,7 @@
     ctx.globalAlpha = o.alpha == null ? 0.9 : o.alpha;
     ctx.beginPath();
     poly.forEach(([x, y], i) => {
-      const j = 2.2 * noise(i * 0.7 + frameVariant * 3, seed);
+      const j = 2.2 * noise(i * 0.7, seed);
       i ? ctx.lineTo(x + dx + j, y + dy + j) : ctx.moveTo(x + dx + j, y + dy + j);
     });
     ctx.closePath();
@@ -281,6 +280,6 @@
   window.Pen = {
     INK, GUIDE, PAPER, hash, rng, noise, clamp, lerp, smooth, ease, seg,
     stroke, pts, group, begin, ink, guide, inkGroup, crayon, crayonEllipse, hatch, text, write,
-    get ctx() { return ctx; }, get variant() { return frameVariant; },
+    get ctx() { return ctx; }, get clock() { return clock; },
   };
 })();
