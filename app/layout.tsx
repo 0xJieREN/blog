@@ -57,6 +57,7 @@ export const metadata: Metadata = {
 
 const inter = Inter({
   subsets: ['latin'],
+  axes: ['opsz'],
   variable: '--font-inter',
   display: 'swap',
 })
