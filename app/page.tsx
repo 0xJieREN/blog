@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { BlogPosts } from 'app/components/posts'
+import { FeaturedPosts } from 'app/components/posts'
 
 export default function Page() {
   return (
@@ -19,7 +19,7 @@ export default function Page() {
           <h2 id="latest-posts">最近文章</h2>
           <Link href="/blog">全部</Link>
         </div>
-        <BlogPosts limit={6} />
+        <FeaturedPosts limit={5} />
       </section>
 
       <section className="section" aria-labelledby="connect">
