@@ -103,7 +103,8 @@
     const [x0, y0, ang, len, w, ph, amp, curl] = L, N = 30, left = [], right = [], mid = [];
     let cx = x0, cy = y0;
     for (let i = 0; i <= N; i++) {
-      const s = i / N, a = ang + 0.1 * Math.sin(s * 2.6 + ph) + curl * Math.pow(s, 3);
+      // soft S-waves along the lock, stronger toward the tip, so loose hair never runs straight
+      const s = i / N, a = ang + (0.1 + 0.22 * s) * Math.sin(s * 6.2 + ph) + curl * Math.pow(s, 3);
       // the breeze: a wave travelling from root to tip, growing toward the tip
       const sway = amp * wind * Math.pow(s, 1.6) * Math.sin(Math.PI * 2 * 0.22 * t - 3.0 * s + ph);
       // walk along the lock so the angle (and the curl at the tip) bends it smoothly
@@ -157,9 +158,12 @@
     }
     // singing: the mouth opens a little with each note of the tune
     const sing = o.sing ? K.press(t, 0) : 0;
+    ink(G.smile, { prog: R(0.6, 0.75), w: W * 0.8 });
     if (sing > 0.05) {
-      ctx.strokeStyle = Pen.INK; ctx.lineWidth = W * 0.8; ctx.beginPath(); ctx.ellipse(-14, 82, 6 + 4 * sing, 4 + 6 * sing, 0, 0, Math.PI * 2); ctx.stroke();
-    } else ink(G.smile, { prog: R(0.6, 0.75), w: W * 0.8 });
+      // humming: the smile parts a little with each note
+      ctx.strokeStyle = Pen.INK; ctx.lineWidth = W * 0.7; ctx.globalAlpha = Math.min(1, sing * 1.5);
+      ctx.beginPath(); ctx.moveTo(-26, 81); ctx.quadraticCurveTo(-14, 82 + 9 * sing, 0, 81); ctx.stroke(); ctx.globalAlpha = 1;
+    }
     // crown and the locks in front of the shoulders
     crayon(G.crown, FLAX, { prog: R(0.2, 0.7), dx: 3, dy: -2, seed: 66 });
     ink(stroke(G.crown, { seed: 67, wobble: 1.2 }), { prog: R(0.2, 0.6), w: W * 0.9 });
@@ -319,7 +323,7 @@
     g.addColorStop(0, `rgba(${C.glow},${0.45 * warm})`); g.addColorStop(1, `rgba(${C.glow},0)`);
     ctx.fillStyle = g; ctx.fillRect(-200, -200, 1500, 1500);
     crayon([[-100, -100], [1200, -100], [1200, 1200], [-100, 1200]], SKY, { alpha: 0.18, dx: 0, dy: 0, seed: 78 });
-    const open = smooth(seg(t, B[4] + 0.6, B[4] + 2.2));
+    const open = 0.72 * smooth(seg(t, B[4] + 0.6, B[4] + 2.2));
     girl(ctx, t, Object.assign({}, CLOSE, { sing: true, open: open > 0.05 ? open : 0, look: [0.6, -0.7], wind: 1.15 }));
     drift(ctx, between(mel, B[4] - 2, B[5] + 1), t, mouthOf(CLOSE), { life: 6.5, wind: -62, lift: 38, pitchScale: 7, ox: -125, oy: -20 });
   }
