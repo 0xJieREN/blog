@@ -69,7 +69,13 @@ export function ThemeToggle({ language = 'zh-CN' }: { language?: 'zh-CN' | 'en' 
 
   const toggleTheme = () => {
     const nextTheme = theme === 'dark' ? 'light' : 'dark'
-    document.documentElement.dataset.theme = nextTheme
+    const root = document.documentElement
+    // Flip every color at once instead of letting each hover transition
+    // crossfade on its own schedule.
+    root.classList.add('theme-switching')
+    root.dataset.theme = nextTheme
+    window.getComputedStyle(root).opacity
+    requestAnimationFrame(() => root.classList.remove('theme-switching'))
     try {
       window.localStorage.setItem('theme', nextTheme)
     } catch (_) {}

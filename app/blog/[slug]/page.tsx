@@ -53,13 +53,40 @@ export async function generateMetadata({ params }) {
   }
 }
 
+function ArrowUpLeft() {
+  return (
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M9.5 9.5 2.5 2.5M2.5 8V2.5H8" />
+    </svg>
+  )
+}
+
 export default async function Blog({ params }) {
   let { slug } = await params
-  let post = getBlogPosts().find((post) => post.slug === slug)
+  let posts = getBlogPosts().sort(
+    (a, b) =>
+      new Date(b.metadata.publishedAt).getTime() -
+      new Date(a.metadata.publishedAt).getTime()
+  )
+  let index = posts.findIndex((post) => post.slug === slug)
+  let post = posts[index]
 
   if (!post) {
     notFound()
   }
+
+  let older = posts[index + 1]
+  let newer = posts[index - 1]
 
   return (
     <section className="article-page">
@@ -85,6 +112,10 @@ export default async function Blog({ params }) {
           }),
         }}
       />
+      <Link className="article-back" href="/blog">
+        <ArrowUpLeft />
+        文章
+      </Link>
       <header className="article-header">
         <h1>{post.metadata.title}</h1>
         <time className="article-meta" dateTime={post.metadata.publishedAt}>
@@ -94,9 +125,22 @@ export default async function Blog({ params }) {
       <article className="prose">
         <CustomMDX source={post.content} />
       </article>
-      <Link className="back-link" href="/blog">
-        ← 全部文章
-      </Link>
+      {(older || newer) && (
+        <nav className="article-pager" aria-label="更多文章">
+          {older && (
+            <Link href={`/blog/${older.slug}`} data-direction="previous">
+              <span>上一篇</span>
+              <strong>{older.metadata.title}</strong>
+            </Link>
+          )}
+          {newer && (
+            <Link href={`/blog/${newer.slug}`} data-direction="next">
+              <span>下一篇</span>
+              <strong>{newer.metadata.title}</strong>
+            </Link>
+          )}
+        </nav>
+      )}
     </section>
   )
 }
