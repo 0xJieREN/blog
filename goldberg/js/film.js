@@ -74,7 +74,7 @@
 
     // --- bedroom ---
     S.bed = group([
-      pts.curve([[296, 760], [294, 620], [298, 545], [322, 516], [350, 540], [352, 640]]),
+      pts.curve([[296, 760], [294, 620], [298, 545], [322, 516], [348, 536], [352, 566]]),
       pts.curve([[812, 760], [812, 650], [818, 600], [838, 590], [854, 604], [852, 760]]),
       [[298, 690], [852, 690]], [[300, 700], [850, 700]],
     ]);
@@ -405,7 +405,12 @@
     const turn = -0.06 * smooth(seg(p, 9, 11)) + 0.04 * smooth(seg(p, 49, 54)) + 0.012 * Math.sin(t * 0.7);
     ctx.save();
     ctx.translate(404, 596); ctx.rotate(turn);
-    if (p > 0.7) { ctx.fillStyle = Pen.PAPER; ctx.beginPath(); ctx.ellipse(0, 0, 43, 41, 0, 0, Math.PI * 2); ctx.fill(); }
+    if (p > 0.7) {
+      // head and cap sit in front of the headboard and pillow
+      ctx.fillStyle = Pen.PAPER;
+      ctx.beginPath(); ctx.ellipse(0, 0, 43, 41, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); S.capPoly.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.fill();
+    }
     crayon(S.capPoly, C.red, { prog: seg(p, 1.2, 1.7), dx: 5, dy: -3, seed: 13 });
     inkGroup(S.cap, seg(p, 0.9, 1.4));
     crayonEllipse(-86, -84, 10, 10, C.yellow, { prog: seg(p, 1.5, 1.7), dx: 2, dy: -2 });

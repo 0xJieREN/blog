@@ -1,14 +1,14 @@
 // Render the film to an mp4: every frame is drawn by index.html in headless Chromium,
 // piped into ffmpeg, then muxed with the recording.
 //
-//   node render.cjs [--out aria.mp4] [--fps 24] [--workers 3] [--from 0] [--to <seconds>] [--size 1080]
+//   node render.cjs [--out aria.mp4] [--fps 24] [--workers 3] [--from 0] [--to <seconds>] [--size 1080] [--crf 25]
 const { chromium } = require('playwright');
 const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
 const args = Object.fromEntries(process.argv.slice(2).join(' ').split('--').filter(Boolean).map((a) => a.trim().split(/\s+/)));
-const FPS = +(args.fps || 24), WORKERS = +(args.workers || 3), SIZE = +(args.size || 1080);
+const FPS = +(args.fps || 24), WORKERS = +(args.workers || 3), SIZE = +(args.size || 1080), CRF = String(args.crf || 25);
 const OUT = path.resolve(args.out || 'aria.mp4');
 const HERE = __dirname;
 const TMP = fs.mkdtempSync(path.join(require('os').tmpdir(), 'aria-'));
@@ -27,7 +27,7 @@ async function renderRange(browser, w, f0, f1) {
   await page.waitForFunction(() => window.__frame);
   const seg = path.join(TMP, `seg${w}.mp4`);
   const enc = spawn('ffmpeg', ['-v', 'error', '-y', '-f', 'image2pipe', '-c:v', 'png', '-framerate', String(FPS), '-i', '-',
-    '-vf', `scale=${SIZE}:${SIZE}:flags=lanczos`, '-c:v', 'libx264', '-preset', 'slow', '-crf', '16', '-tune', 'animation', '-pix_fmt', 'yuv420p', seg],
+    '-vf', `scale=${SIZE}:${SIZE}:flags=lanczos`, '-c:v', 'libx264', '-preset', 'slow', '-crf', CRF, '-tune', 'animation', '-pix_fmt', 'yuv420p', seg],
   { stdio: ['pipe', 'ignore', 'inherit'] });
   const done = new Promise((res, rej) => enc.on('exit', (c) => (c ? rej(new Error('ffmpeg ' + c)) : res())));
   const t0 = Date.now();
