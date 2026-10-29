@@ -33,7 +33,7 @@ d = np.abs(np.diff(f, axis=0)).mean((1, 2))
 cuts = []
 if a.score:
     s = open(a.score).read()
-    cuts = json.loads(s[s.index('=') + 1:].strip().rstrip(';'))['bars']
+    cuts = json.loads(s[s.index('window.SCORE') + len('window.SCORE'):].split('=', 1)[1].strip().rstrip(';'))['bars']
 
 flicker = []
 for i in range(1, len(f) - 1):
