@@ -7,8 +7,8 @@
 //   -> dark day-flier (blue-black, orange, red) -> pale eyed satyr (cream, red flush)
 //   -> red-olive hawk moth (crimson) -> postman (black, scarlet) -> burnet (red, black)
 //   -> red-banded slate (red, slate), whose red leads back to the wasp moth's red body.
-// The wheel turns three times, faster each time, with the music: lap 1 one butterfly per 4 then 3
-// eighths, lap 2 per 2 eighths, lap 3 per eighth. It opens on the wasp moth, the first creature
+// The wheel turns three times, faster each time, over music held at 160 bpm: lap 1 one butterfly
+// a bar, then every half bar; lap 2 every 3 or 2 eighths; lap 3 every eighth. It opens on the wasp moth, the first creature
 // in the first frame of Claude.mp4 (and in its last), and ends, held, on the red-banded slate,
 // the butterfly that flies into the lens at the climax of Claude.mp4.
 // Every species is shown in its true colours first; some later tiles are negative prints (pale
