@@ -1,0 +1,29 @@
+<!doctype html><meta charset="utf-8"><body style="margin:0">
+<canvas id="c" width="1080" height="1080"></canvas>
+<script src="../js/beats.js"></script><script src="../js/media.js"></script><script src="../js/species.js"></script>
+<script src="../js/grounds.js"></script><script src="../js/crafts.js"></script><script src="../js/series.js"></script>
+<script>
+// Instagram covers (tools/shot.cjs screenshots this page):
+//   ?v=wheel  the fourteen first-lap prints round the colour wheel, the held last tile in the middle
+//   ?v=tile&i=N  one tile, full bleed
+const q = new URLSearchParams(location.search), c = document.getElementById('c'), g = c.getContext('2d');
+const { TILES } = Film, M = Media, tile = (i) => M.tileBitmap(TILES[i], i);
+if (q.get('v') === 'tile') g.drawImage(tile(+q.get('i')), 0, 0);
+else {
+  M.paper(g, '#efe7d5'); M.crayon(g, '#e2d7bf', { seed: 4, alpha: 0.25 });
+  const R = 400, S = 140;
+  // a faint ring and spokes, like the vein rays of the grounds
+  g.strokeStyle = 'rgba(80,60,40,.18)'; g.lineWidth = 1.2;
+  g.beginPath(); g.arc(540, 540, R, 0, 7); g.stroke();
+  for (let k = 0; k < 14; k++) {
+    const a = -Math.PI / 2 + k / 14 * Math.PI * 2, x = 540 + Math.cos(a) * R, y = 540 + Math.sin(a) * R;
+    g.save(); g.shadowColor = 'rgba(40,30,20,.25)'; g.shadowBlur = 6; g.shadowOffsetY = 2;
+    g.drawImage(tile(k), x - S / 2, y - S / 2, S, S); g.restore();
+  }
+  const C = 390;
+  g.save(); g.shadowColor = 'rgba(40,30,20,.3)'; g.shadowBlur = 10; g.shadowOffsetY = 3;
+  g.drawImage(tile(TILES.length - 1), 540 - C / 2, 540 - C / 2, C, C); g.restore();
+  M.tooth(g, 0.6);
+}
+window.done = true;
+</script>
