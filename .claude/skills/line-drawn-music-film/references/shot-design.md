@@ -25,6 +25,16 @@ dissolves of 1-1.5 s (`Kit.film(..., { dissolve: 1.2 })`), cameras that only dri
 that is continuous in time. Ask for, or allow, the length the piece needs (60-90 s for a slow
 piece); don't squeeze a mood into 30 s.
 
+## Bookend with one shape
+
+The strongest ending so far: the opening line (a melody drawn by the pen) bends into a shape
+(her profile) and pales into pencil exactly where that shape hangs in the next shot, so it
+survives the dissolve. Through the film the notes go and wait on the pencilled shape; at the
+end the ink joins them, note by note with the music, and it is her. Make the end shape the
+same drawing as the character, so it reads as "her". Bend the line by resampling both curves
+to the same number of points and easing each point from one to the other, staggered from the
+first note to the last (`flaxen/js/film.js`, `bentAt`).
+
 ## One shot per bar (or per phrase)
 
 - Cut **exactly on downbeats** taken from `SCORE.bars`. A cut that lands on the bass note feels

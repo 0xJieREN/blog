@@ -21,6 +21,9 @@
 | IMSLP score/MIDI download stops at a disclaimer | accepting it would be agreeing on the user's behalf | ask the user, or transcribe the recording instead |
 | A melody line full of spikes | transcription ghost notes and a pitch scale that's too steep | drop notes within 0.15 s of the previous one, ~16 px per semitone, smooth the line (0.2 s) |
 | Two hair/staff paths crossing in one shot | a character's own staff plus a scene staff | keep one stream per shot (`noHair`-style switch) |
+| The ink falls behind the pen on steep parts of a line | stroke revealed by time while the pen moves by x | reveal to the arc length at the pen's x (`progAtX` in flaxen) |
+| Crayon scribbles huge in a close-up | crayon drawn inside a scaled-up local frame scales its pattern too | pass `tex: 1 / scale` to `crayon` (engine) |
+| A character drawn bigger than the things around her | each object drawn at its own convenient size | draw the scene in real units (cm) and place it with one scale per shot |
 | `pkill -f <pattern>` killed the current shell | the pattern matched the command itself | don't pkill by a pattern that appears in your own command line |
 
 Also worth remembering:

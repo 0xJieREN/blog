@@ -188,18 +188,20 @@
   }
   // Fill a polygon with crayon. prog sweeps the scribble in from one side.
   // The fill is nudged off the ink outline, the way crayon never quite meets the pen line.
+  // o.tex: size of the scribble relative to the current units (1 / scale when drawing in a
+  // scaled-up local frame, so the wax keeps its size on the page).
   function crayon(poly, color, o = {}) {
     const prog = o.prog == null ? 1 : o.prog;
     if (prog <= 0) return;
     let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
     for (const [x, y] of poly) { x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y); }
     if (offscreen([x0 - 20, y0 - 20, x1 + 20, y1 + 20])) return;
-    const dx = o.dx != null ? o.dx : 5, dy = o.dy != null ? o.dy : -3, seed = o.seed || 11;
+    const dx = o.dx != null ? o.dx : 5, dy = o.dy != null ? o.dy : -3, seed = o.seed || 11, tex = o.tex || 1;
     ctx.save();
     ctx.globalAlpha = o.alpha == null ? 0.9 : o.alpha;
     ctx.beginPath();
     poly.forEach(([x, y], i) => {
-      const j = 2.2 * noise(i * 0.7, seed);
+      const j = 2.2 * tex * noise(i * 0.7, seed);
       i ? ctx.lineTo(x + dx + j, y + dy + j) : ctx.moveTo(x + dx + j, y + dy + j);
     });
     ctx.closePath();
@@ -208,11 +210,11 @@
       // ragged scribble front
       const fx = x0 + (x1 - x0 + 40) * prog;
       ctx.beginPath(); ctx.moveTo(x0 - 30, y0 - 30);
-      for (let y = y0 - 30; y <= y1 + 30; y += 9) ctx.lineTo(fx + 14 * noise(y / 13, seed + 1), y);
+      for (let y = y0 - 30; y <= y1 + 30; y += 9 * tex) ctx.lineTo(fx + 14 * tex * noise(y / (13 * tex), seed + 1), y);
       ctx.lineTo(x0 - 30, y1 + 30); ctx.closePath(); ctx.clip();
     }
     const pat = pattern(color);
-    pat.setTransform(new DOMMatrix().translate(seed % 97, (seed * 7) % 89));
+    pat.setTransform(new DOMMatrix().scale(tex).translate(seed % 97, (seed * 7) % 89));
     ctx.fillStyle = pat;
     ctx.fillRect(x0 - 30, y0 - 30, x1 - x0 + 60, y1 - y0 + 60);
     ctx.restore();
