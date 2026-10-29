@@ -50,8 +50,23 @@ allc = [round(100 * float(x.mean()), 1) for x in d]
 colc = [round(100 * float((x & coloured).sum()) / max(1, int(coloured.sum())), 1) for x in d]
 print('changed pixels per frame, % overall :', allc)
 print('changed pixels per frame, % coloured:', colc)
-if all(v < 0.5 for v in allc[0::2]) or all(v < 0.5 for v in allc[1::2]):
+if all(v < 0.5 for v in allc):
+    print('-> held frame: nothing moves here')
+elif all(v < 0.5 for v in allc[0::2]) or all(v < 0.5 for v in allc[1::2]):
     print('-> animates on twos (every other frame repeats)')
+
+# hard cuts over the whole film, and how much moves between them
+raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', a.film, '-vf', 'scale=270:270', '-f', 'rawvideo', '-pix_fmt', 'gray', '-'], capture_output=True).stdout
+g = np.frombuffer(raw, np.uint8).reshape(-1, 270, 270).astype(np.int16)
+ch = (np.abs(np.diff(g, axis=0)) > 25).mean((1, 2)) * 100
+cuts = [i + 1 for i, c in enumerate(ch) if c > 30]
+if cuts:
+    iv = np.diff([0] + cuts) / (num / den)
+    between = [c for i, c in enumerate(ch) if i + 1 not in cuts]
+    print(f'hard cuts: {len(cuts)}, at', ', '.join(f'{c / (num / den):.2f}' for c in cuts[:30]), '...' if len(cuts) > 30 else '')
+    print(f'shot length: mean {iv.mean():.3f}s, min {iv.min():.3f}s, max {iv.max():.3f}s; motion between cuts: max {max(between, default=0):.1f}% of pixels')
+    if iv.std() < 0.05 * iv.mean() and max(between, default=0) < 1:
+        print(f'-> held pictures cut on a steady grid ({60 / iv.mean():.0f} cuts a minute): a pattern series, see references/pattern-series.md')
 
 # dominant colours (tiny k-means)
 px = f[0, ::6, ::6].reshape(-1, 3).astype(float)

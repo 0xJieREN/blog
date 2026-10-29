@@ -6,7 +6,9 @@ JavaScript." Nothing below is his published method; it is what frame-by-frame st
 films shows (October 2026). Re-check against the films if a detail matters.
 
 Films are served as plain mp4s: `https://kevintngo.com/films/<name>.mp4` for answer, dew, loves,
-nib, still-here, orizuru, honey-bearer, kind, fable, still. watermelon is on video.twimg.com (the
+nib, still-here, orizuru, honey-bearer, kind, fable, still. Generative series are webp walls at
+`/artwork/<work>/<nn>-<name>-540-<hash>.webp` (and `-2160-`); the hashed names are in the work
+page's HTML (`/work/self-portraits/`, `/work/oav/`). watermelon is on video.twimg.com (the
 link is in its work page). The "wall" pages (/still/, /kind/, /fable/, /borrowed-light/) are
 pre-rendered webp tiles, not live code, so there is no source to read; study the videos.
 Run `scripts/study_reference.py` on any of them.
@@ -65,7 +67,13 @@ Run `scripts/study_reference.py` on any of them.
 - **orizuru**: flat vector with soft grain, origami crane, aerial landscapes.
 - **nib**: a visible fountain pen in frame drawing the scene, dense cross-hatching, dark crayon
   sky, a construction grid under the drawing.
-- **drawing desk / self-portraits**: still generative images (design sheets, star charts).
+- **drawing desk**: still generative images (design sheets, star charts, launch gantries).
+- **self-portraits**: "Claude draws self-portraits." One plain head-and-shoulders silhouette,
+  pixel-locked, made of a different pattern or craft in each of 20 tiles (girih, pillow lace,
+  tartan, shingles, wood grain...), no outline, figure and ground split only by a value swap.
+  Shown as a wall and as a 20 s film: 20 held tiles, one per second, hard cuts every second beat
+  of ~120 bpm music. A different kind of film from the drawn stories; see
+  `references/pattern-series.md`.
 
 ## Characters (what worked, what didn't)
 

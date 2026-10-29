@@ -1,6 +1,6 @@
 ---
 name: line-drawn-music-film
-description: Make short hand-drawn-looking animated films set to a piece of music, where every frame is drawn in JavaScript on a canvas (ballpoint lines, crayon fills, handwritten captions) in the style of Kevin T. Ngo's "Claude drew every frame" films, with cuts, notes and motion timed to the real recording and score. Use this whenever the user wants a music video, animated short, visualizer or "video for this song/piece" made with code or canvas, wants something "like Kevin's films", line-art / doodle / ballpoint / crayon animation, a film for a classical piece (Bach, Goldberg, Chopin...), notes flowing out of an instrument, or asks to redo/extend the "aria" film in this repo, even if they don't say "skill" or name the style. 中文触发：用线条/手绘/圆珠笔/蜡笔风格做视频、给某首曲子做短片、像 Kevin 那样用 JavaScript 画每一帧、配乐动画、音符跟着音乐弹出。
+description: Make short hand-drawn-looking animated films set to a piece of music, where every frame is drawn in JavaScript on a canvas (ballpoint lines, crayon fills, handwritten captions) in the style of Kevin T. Ngo's "Claude drew every frame" films, with cuts, notes and motion timed to the real recording and score. Use this whenever the user wants a music video, animated short, visualizer or "video for this song/piece" made with code or canvas, wants something "like Kevin's films", line-art / doodle / ballpoint / crayon animation, a film for a classical piece (Bach, Goldberg, Chopin...), notes flowing out of an instrument, asks to redo/extend the "aria" or "flaxen" films in this repo, or wants a beat-cut series of generative pictures: one silhouette (a person, a self-portrait, an avatar) filled with a different pattern, craft or texture in every frame, cut on the beat like Kevin's "self-portraits", even if they don't say "skill" or name the style. 中文触发：用线条/手绘/圆珠笔/蜡笔风格做视频、给某首曲子做短片、像 Kevin 那样用 JavaScript 画每一帧、配乐动画、音符跟着音乐弹出、同一个剪影每一拍换一种图案/纹理/材质、卡点切换的图案肖像系列、Kevin 的自画像视频。
 ---
 
 # Line-drawn music films
@@ -17,6 +17,21 @@ Films made this way in this repo, for worked examples:
   dissolves, notes transcribed from the recording (no open score), the opening melody drawn as
   a pen line, a girl with loose wind-blown hair, notes drifting like seeds.
 
+## Two kinds of film
+
+Kevin makes two kinds, and they are built differently. Decide which one the user wants first.
+
+- **Drawn story** (`goldberg/`, `flaxen/`, his still here / nib / watermelon): lines draw
+  themselves on, a camera moves, shots dissolve on downbeats, captions tell one sentence, notes
+  of the real score appear as they're played. Most of this file is about this kind.
+- **Pattern series** (his "self-portraits"): no motion at all. The same silhouette, pixel-locked,
+  made of a different pattern or craft in every tile; twenty finished pictures, each held for
+  exactly two beats, hard cuts, no captions. Read `references/pattern-series.md` and start from
+  `assets/series-template/`; steps 3-6 below are replaced by the process there.
+
+If the user sends a reference video, run `study_reference.py` on it first: a film where nothing
+changes between cuts and the cuts fall on a regular beat grid is a pattern series.
+
 ## What's in here
 
 - `assets/template/`: a working project. Copy it to start. `index.html` (player + `?render=1`
@@ -24,6 +39,9 @@ Films made this way in this repo, for worked examples:
   keyboard, bass stones, eyes, pendulum, shot sequencer with dissolves, captions, bass strip,
   closing card), `js/film.js` (a 4-shot example), `js/fonts.js`, example `js/score.js` and
   `audio/example.mp3`.
+- `assets/series-template/`: a working pattern series. `js/media.js` (the measured silhouette,
+  inside/outside clipping, crayon, hatching, stipple, rough lines, scatter, motifs, paper
+  tooth), `js/series.js` (eight example tiles and the beat-cut player), `js/beats.js`.
 - `scripts/`
   - `study_reference.py`: study a reference film (contact sheet, consecutive frames, frame-diff
     stats, on-twos detection, palette).
@@ -35,17 +53,23 @@ Films made this way in this repo, for worked examples:
   - `stills.cjs`: a contact sheet of chosen moments in seconds. Use it after every change.
   - `render.cjs`: full render to mp4.
   - `qa.py`: flicker, too-fast motion, contact sheet, audio level.
+  - `beat_grid.py`: pattern series cut times, one tile every N beats, written to `beats.js`;
+    trims the music to start on the first cut and fades it under the last tile.
+  - `series_check.cjs`: pattern series wall (all tiles in one image) plus figure/ground contrast
+    and light/dark alternation checks against Kevin's measurements.
 - `references/`
   - `kevin-style.md`: what Kevin's films look like and measure like, and how that maps to code.
   - `music-and-sync.md`: legal recordings and scores, choosing and splicing an excerpt, timing.
   - `shot-design.md`: finding the idea, one shot per bar, cut types, camera speed, captions.
   - `pitfalls.md`: every problem hit on the first film and its fix. Skim it before you start.
+  - `pattern-series.md`: Kevin's self-portraits film measured, his process reconstructed in
+    eight steps, five ways to split figure from ground, and how to build one with the template.
 
 ## Workflow
 
 ### 1. Pin down the brief
 
-Get, or decide sensibly and state: the piece and which part, target length (a fast or
+Get, or decide sensibly and state: which kind of film (above), the piece and which part, target length (a fast or
 structural piece: ~30 s; a slow, tender one needs 60-90 s to breathe; a full 5-minute piece was
 not wanted), format (1080x1080, 24 fps), the feeling or story, any reference style, and where
 the project folder goes. If the user is away or says
