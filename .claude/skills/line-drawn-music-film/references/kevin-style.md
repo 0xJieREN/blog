@@ -82,8 +82,10 @@ Run `scripts/study_reference.py` on any of them.
   figure in side view, drawn in centimetres at real proportions (keys 72 cm, seated head top
   ~130 cm, grand piano ~2 m), read as a person playing. Profile only: forehead, nose, lips,
   chin, a jaw line that rises toward the ear, a slim neck, a closed eye as one lash curve. A
-  piano reads as a piano when its keys show as vertical black and white keys: turn the keyboard
-  slightly toward the camera even in a side view.
+  side-view keyboard must be a side view too: a narrow horizontal band receding into the picture
+  (keys closing up with depth), white keys as flat slabs with a thin front edge, black keys on
+  the back half, shorter, narrower and raised, in twos and threes. A keyboard drawn from above
+  in a side-view scene looked wrong (`flaxen/js/film.js`, `keyboard`).
 - A raised single finger reads as rude; small circles next to eyes read as more eyes.
 
 ## Turning this into code (what worked here)

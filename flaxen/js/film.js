@@ -170,8 +170,8 @@
     });
     return { poly: side(1).concat(side(-1).reverse()), lines: [side(1), side(-1)] };
   };
-  const ARM = limb([[64, -97], [58, -84], [52, -76], [34, -77], [17, -79.5]], 3.6, 2.4);
-  const ARM_FAR = limb([[60, -96], [52, -78], [30, -79], [8, -81.5]], 3.4, 2.2);
+  const ARM = limb([[64, -97], [58, -84], [52, -75], [34, -75.5], [17, -77]], 3.6, 2.4);
+  const ARM_FAR = limb([[60, -96], [52, -78], [32, -79], [16, -79.6]], 3.4, 2.2);
   const SLEEVE = limb([[65, -98], [62, -91], [60, -87]], 4.4, 4.2);
   const bodyInk = group([
     BODY.bench.concat([BODY.bench[0]]), ...BODY.benchLegs,
@@ -190,26 +190,63 @@
     plate: [[-34, -100], [-52, -108], [-110, -116], [-170, -110], [-192, -101]],
     desk: [[-6, -100], [-20, -128], [-14, -129], [0, -100]],
     sheet: [[-8, -104], [-19, -126], [-15, -127], [-4, -105]],
-    cheek: [[20, -66], [20, -86], [22.5, -88], [23.5, -66]],
-    keybed: [[20, -72], [-8.4, -72], [-8.4, -66], [20, -66]],
+    keybed: [[20, -70.9], [-8.4, -70.9], [-8.4, -66], [20, -66]],
   };
   const leg = (x) => [[[x - 3, -66], [x - 2, -4]], [[x + 3, -66], [x + 2, -4]], [[x - 3.6, -61], [x + 3.6, -61]]];
   const pianoInk = group([
     PIANO.body.concat([PIANO.body[0]]), [[-6, -96], [-188, -96]], [[-6, -70], [-188, -70]],
     PIANO.lid, [[-80, -168], [-187, -135]], [[-116, -100], [-116, -158]],
-    PIANO.desk.concat([PIANO.desk[0]]), PIANO.cheek, PIANO.keybed.concat([PIANO.keybed[0]]),
+    PIANO.desk.concat([PIANO.desk[0]]), PIANO.keybed.concat([PIANO.keybed[0]]),
     ...leg(-14), ...leg(-182),
     [[-1, -66], [-1, -9]], [[5, -66], [5, -9]], [[-4, -9], [8, -9], [8, -5], [-4, -5], [-4, -9]], [[8, -7.5], [13, -6.5]], [[8, -6], [12.5, -4.5]],
   ], { wobble: 0.3 });
   const strings = group(Array.from({ length: 7 }, (_, i) => [[-40 - i * 2, -101.5 - i * 0.6], [-186 + i, -101.5 - i * 0.5]]), { wobble: 0.15 });
   const sheetLines = group(Array.from({ length: 5 }, (_, i) => { const y = -109 - i * 3.2, x = -8 - (-104 - y) * 0.5; return [[x - 1, y], [x + 2.5, y - 0.4]]; }), { wobble: 0.05 });
   // white keys every 2.2 cm, black keys in twos and threes over the far part of the band
-  // the keys run up the page, long white keys with the shorter black ones at their far end
-  const KEY_W = 2.2, KEY_N = 12;
-  const keyAt = (k, v) => [18 - k * KEY_W - v * 2, -72 - v * 14];
-  const KEYS = [keyAt(0, 0), keyAt(KEY_N, 0), keyAt(KEY_N, 1), keyAt(0, 1)];
-  const keyLines = group(Array.from({ length: KEY_N - 1 }, (_, i) => [keyAt(i + 1, 0), keyAt(i + 1, 1)]), { wobble: 0.05 });
-  const BLACK = [1, 2, 4, 5, 6, 8, 9, 11].map((k) => [keyAt(k - 0.3, 1), keyAt(k + 0.3, 1), keyAt(k + 0.3, 0.38), keyAt(k - 0.3, 0.38)]);
+  // the keyboard as it really sits, seen from the side and a little from above: white keys are
+  // flat slabs running toward her, each with a thin front edge; the keyboard runs away from us,
+  // the keys closing up with distance; black keys sit on the back half, shorter, narrower and
+  // standing higher, in twos and threes. The treble end is nearest (her right side faces us).
+  const KB = { front: 18, back: -6, top: -72, lip: 1.1, blackFront: 3.5, blackH: 1.3, n: 30 };
+  const KB_V = [0.3, -0.6], KB_R = 0.93;
+  const kbDepth = (k) => (1 - Math.pow(KB_R, k)) / (1 - KB_R);
+  const kp = (X, k, h) => { const d = kbDepth(k); return [X + KB_V[0] * d, h + KB_V[1] * d]; };
+  // counting white keys away from us from the top C: a black key sits between A-B, G-A, F-G, D-E, C-D
+  const hasBlack = (k) => k >= 2 && [0, 2, 3, 4, 6].includes(k % 7);
+  function keyboard(ctx, W) {
+    const { front: F, back: Bk, top: T, lip, blackFront: BF, blackH, n } = KB, hb = T - blackH;
+    const line = (a, b) => { ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); };
+    ctx.save();
+    // the fallboard: the front of the case, standing behind the keys
+    fill(ctx, [kp(Bk, 0, T + lip), kp(Bk, n, T + lip), kp(Bk, n, T - 4.5), kp(Bk, 0, T - 4.5)], '#d9b48c');
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    // the white keys: their tops, the near key's side, and the row of thin front edges
+    fill(ctx, [kp(F, 0, T), kp(Bk, 0, T), kp(Bk, n, T), kp(F, n, T)], '#fbf8f1');
+    fill(ctx, [kp(F, 0, T), kp(Bk, 0, T), kp(Bk, 0, T + lip), kp(F, 0, T + lip)], '#f1ece2');
+    fill(ctx, [kp(F, 0, T), kp(F, n, T), kp(F, n, T + lip), kp(F, 0, T + lip)], '#f1ece2');
+    ctx.strokeStyle = Pen.INK;
+    for (let k = 1; k < 18; k++) {
+      ctx.globalAlpha = 0.6 * Math.pow(KB_R, k * 1.3); ctx.lineWidth = W * 0.3;
+      line(kp(F, k, T), kp(Bk, k, T)); line(kp(F, k, T), kp(F, k, T + lip));
+    }
+    // the black keys, far ones first so the near ones stand in front of them
+    for (let k = n - 1; k >= 2; k--) {
+      if (!hasBlack(k)) continue;
+      const a = k - 0.32, b = k + 0.32;
+      ctx.globalAlpha = 0.95;
+      fill(ctx, [kp(BF, a, T), kp(Bk, a, T), kp(Bk, a, hb), kp(BF, a, hb)], '#2b3060');
+      fill(ctx, [kp(BF, a, T), kp(BF, b, T), kp(BF, b, hb), kp(BF, a, hb)], '#2b3060');
+      fill(ctx, [kp(BF, a, hb), kp(Bk, a, hb), kp(Bk, b, hb), kp(BF, b, hb)], '#5a62a3');
+      // a glint along each key's top edge keeps neighbours apart
+      ctx.globalAlpha = 0.85; ctx.strokeStyle = '#fbf8f1'; ctx.lineWidth = W * 0.35; line(kp(BF, a, hb), kp(Bk, a, hb)); ctx.strokeStyle = Pen.INK;
+    }
+    // outlines: the near key, the front edge of the keyboard
+    ctx.globalAlpha = 0.95; ctx.lineWidth = W * 0.7;
+    line(kp(F, 0, T + lip), kp(Bk, 0, T + lip)); line(kp(F, 0, T), kp(Bk, 0, T));
+    line(kp(F, 0, T + lip), kp(F, n, T + lip)); ctx.lineWidth = W * 0.5; line(kp(F, 0, T), kp(F, n, T));
+    line(kp(Bk, 0, T - 4.5), kp(Bk, n, T - 4.5)); line(kp(F, n, T), kp(Bk, n, T)); line(kp(Bk, n, T), kp(Bk, n, T - 4.5));
+    ctx.globalAlpha = 1; ctx.restore();
+  }
   const r0 = rng(5);
   const SHADE = group(Array.from({ length: 34 }, (_, i) => { const x = -200 + i * 9 + r0() * 4 - (i > 22 ? -40 : 0), y = r0() * 3; return [[x, y + 1], [x + 7 + r0() * 3, y + 1]]; }), { wobble: 0.3 });
 
@@ -333,11 +370,8 @@
     fill(ctx, PIANO.desk, Pen.PAPER); wax(PIANO.desk, WOOD, { prog: R(0.5, 1.0), alpha: 0.55, dx: 0, dy: 0, seed: 125 });
     fill(ctx, PIANO.sheet, '#fbf8f1'); inkGroup(sheetLines, R(0.7, 1.0), { w: W * 0.3, alpha: 0.7 });
     fill(ctx, PIANO.keybed, Pen.PAPER); wax(PIANO.keybed, WOOD, { prog: R(0.5, 1.0), alpha: 0.6, dx: 0, dy: 0, seed: 126 });
-    fill(ctx, KEYS, '#fbf8f1');
-    if (R(0.7, 0.71) > 0) { ctx.globalAlpha = 0.9; for (const b of BLACK) fill(ctx, b, Pen.INK); ctx.globalAlpha = 1; }
+    if (R(0.6, 0.61) > 0) keyboard(ctx, W);
     inkGroup(pianoInk, R(0, 0.9), { w: W });
-    ink(stroke(KEYS.concat([KEYS[0]]), { wobble: 0.05, seed: 127 }), { prog: R(0.6, 0.9), w: W * 0.7 });
-    inkGroup(keyLines, R(0.7, 0.9), { w: W * 0.4 });
     // far leg and far arm, behind her
     const p = K.press(t, 0), q = K.press(t, 1);
     if (R(0.4, 0.41) > 0) {
@@ -345,7 +379,7 @@
       wax(BODY.shoeFar, SHOE, { prog: R(0.6, 0.9), alpha: 0.6, dx: 0.5, dy: -0.4, seed: 130 });
       inkGroup(farInk, R(0.4, 0.9), { w: W * 0.8, alpha: 0.7 });
       ctx.fillStyle = Pen.PAPER; ctx.strokeStyle = Pen.INK; ctx.lineWidth = W * 0.7; ctx.globalAlpha = 0.8;
-      hand(ctx, 8, -81.5, W, q, 0.8);
+      hand(ctx, 16, -79.6, W, q, 0.85);
     }
     // bench, body, dress
     wax(BODY.bench, '#8a6a52', { prog: R(0.5, 0.9), alpha: 0.6, dx: 0.6, dy: -0.4, seed: 131 });
@@ -362,7 +396,7 @@
       wax(SLEEVE.poly, DRESS, { prog: R(0.6, 1.0), dx: 0.6, dy: -0.4, seed: 135 });
       inkGroup(armInk, R(0.6, 1.0), { w: W * 0.9 });
       ctx.fillStyle = Pen.PAPER; ctx.strokeStyle = Pen.INK; ctx.lineWidth = W * 0.8;
-      hand(ctx, 17, -79.5, W, p, 1);
+      hand(ctx, 17, -77, W, p, 1);
     }
     ctx.restore();
     TEX = 1;
