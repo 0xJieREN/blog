@@ -20,7 +20,8 @@
   };
   // one colour per letter name, so a pitch always looks the same
   const LETTER_COLOR = [C.teal, C.blue, C.green, C.red, C.yellow, C.orange, C.pink]; // C D E F G A B
-  const LETTER = [0, 0, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6];
+  // letter name of each pitch class; SCORE.spelling = 'flat' writes black keys as flats (Db, Eb, Gb...)
+  const LETTER = SC.spelling === 'flat' ? [0, 1, 1, 2, 2, 3, 4, 4, 5, 5, 6, 6] : [0, 0, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6];
 
   // ---------- musical time ----------
   function beatAt(t) {
@@ -325,11 +326,11 @@
 
   // ---------- the film: shots, captions, bass strip, closing card ----------
   // shots: [{ start: seconds, draw(ctx, t, k), caption?: string }]
-  // opt:   { duration, dissolve, strip: { names, contour } | null, final: { at, title, credit } }
+  // opt:   { duration, dissolve, strip: { names, contour } | null, final: { at, title, size, credit } }
   function film(shots, opt) {
     const DISSOLVE = opt.dissolve == null ? 0.22 : opt.dissolve;
     const caps = shots.map((s) => text(s.caption || '', 'tech', 540, 1026, 42, { align: 'center' }));
-    const fin = opt.final && [text(opt.final.title, 'tech', 540, 1010, 86, { align: 'center' }), text(opt.final.credit || '', 'tech', 540, 1054, 18, { align: 'center' })];
+    const fin = opt.final && [text(opt.final.title, 'tech', 540, 1010, opt.final.size || 86, { align: 'center' }), text(opt.final.credit || '', 'tech', 540, 1054, 18, { align: 'center' })];
     let stripG = null, off = null;
 
     function strip(ctx, t) {

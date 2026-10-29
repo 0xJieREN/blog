@@ -16,6 +16,25 @@ Write the whole film as one sentence split across the shots, one short line each
 the tune wandered, / but the bass beneath it held still, / something steady to lean on, /
 and the Count slept." Then a closing card ("aria.") and a small credit.
 
+## Let the music set the pace
+
+Match the cutting to the character of the piece, not to a fixed rule. The Goldberg Aria takes
+one shot per bar (4.4 s) and that felt right; the same rate on Debussy's "Très calme et
+doucement expressif" felt rushed. For slow, tender music: shots of 10-15 s, one per phrase,
+dissolves of 1-1.5 s (`Kit.film(..., { dissolve: 1.2 })`), cameras that only drift, and motion
+that is continuous in time. Ask for, or allow, the length the piece needs (60-90 s for a slow
+piece); don't squeeze a mood into 30 s.
+
+## Bookend with one shape
+
+The strongest ending so far: the opening line (a melody drawn by the pen) bends into a shape
+(her profile) and pales into pencil exactly where that shape hangs in the next shot, so it
+survives the dissolve. Through the film the notes go and wait on the pencilled shape; at the
+end the ink joins them, note by note with the music, and it is her. Make the end shape the
+same drawing as the character, so it reads as "her". Bend the line by resampling both curves
+to the same number of points and easing each point from one to the other, staggered from the
+first note to the last (`flaxen/js/film.js`, `bentAt`).
+
 ## One shot per bar (or per phrase)
 
 - Cut **exactly on downbeats** taken from `SCORE.bars`. A cut that lands on the bass note feels
