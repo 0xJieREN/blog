@@ -170,8 +170,8 @@
     });
     return { poly: side(1).concat(side(-1).reverse()), lines: [side(1), side(-1)] };
   };
-  const ARM = limb([[64, -97], [58, -84], [52, -75], [34, -75], [14, -77.5]], 3.6, 2.5);
-  const ARM_FAR = limb([[60, -96], [52, -77], [32, -77], [6, -79]], 3.4, 2.3);
+  const ARM = limb([[64, -97], [58, -84], [52, -76], [34, -77], [17, -79.5]], 3.6, 2.4);
+  const ARM_FAR = limb([[60, -96], [52, -78], [30, -79], [8, -81.5]], 3.4, 2.2);
   const SLEEVE = limb([[65, -98], [62, -91], [60, -87]], 4.4, 4.2);
   const bodyInk = group([
     BODY.bench.concat([BODY.bench[0]]), ...BODY.benchLegs,
@@ -190,9 +190,8 @@
     plate: [[-34, -100], [-52, -108], [-110, -116], [-170, -110], [-192, -101]],
     desk: [[-6, -100], [-20, -128], [-14, -129], [0, -100]],
     sheet: [[-8, -104], [-19, -126], [-15, -127], [-4, -105]],
-    cheek: [[18, -66], [18, -80], [20, -82], [21, -66]],
-    keys: [[16, -73], [-6, -73], [-8, -79], [14, -79]],
-    keybed: [[18, -73], [-6, -73], [-6, -66], [18, -66]],
+    cheek: [[20, -66], [20, -86], [22.5, -88], [23.5, -66]],
+    keybed: [[20, -72], [-8.4, -72], [-8.4, -66], [20, -66]],
   };
   const leg = (x) => [[[x - 3, -66], [x - 2, -4]], [[x + 3, -66], [x + 2, -4]], [[x - 3.6, -61], [x + 3.6, -61]]];
   const pianoInk = group([
@@ -205,10 +204,12 @@
   const strings = group(Array.from({ length: 7 }, (_, i) => [[-40 - i * 2, -101.5 - i * 0.6], [-186 + i, -101.5 - i * 0.5]]), { wobble: 0.15 });
   const sheetLines = group(Array.from({ length: 5 }, (_, i) => { const y = -109 - i * 3.2, x = -8 - (-104 - y) * 0.5; return [[x - 1, y], [x + 2.5, y - 0.4]]; }), { wobble: 0.05 });
   // white keys every 2.2 cm, black keys in twos and threes over the far part of the band
-  const KEY_W = 2.2, KEY_N = 10;
-  const keyAt = (k, v) => [16 - k * KEY_W - v * 2, -73 - v * 6];
+  // the keys run up the page, long white keys with the shorter black ones at their far end
+  const KEY_W = 2.2, KEY_N = 12;
+  const keyAt = (k, v) => [18 - k * KEY_W - v * 2, -72 - v * 14];
+  const KEYS = [keyAt(0, 0), keyAt(KEY_N, 0), keyAt(KEY_N, 1), keyAt(0, 1)];
   const keyLines = group(Array.from({ length: KEY_N - 1 }, (_, i) => [keyAt(i + 1, 0), keyAt(i + 1, 1)]), { wobble: 0.05 });
-  const BLACK = [1, 2, 4, 5, 6, 8, 9].filter((k) => k < KEY_N).map((k) => [keyAt(k - 0.3, 1), keyAt(k + 0.3, 1), keyAt(k + 0.3, 0.4), keyAt(k - 0.3, 0.4)]);
+  const BLACK = [1, 2, 4, 5, 6, 8, 9, 11].map((k) => [keyAt(k - 0.3, 1), keyAt(k + 0.3, 1), keyAt(k + 0.3, 0.38), keyAt(k - 0.3, 0.38)]);
   const r0 = rng(5);
   const SHADE = group(Array.from({ length: 34 }, (_, i) => { const x = -200 + i * 9 + r0() * 4 - (i > 22 ? -40 : 0), y = r0() * 3; return [[x, y + 1], [x + 7 + r0() * 3, y + 1]]; }), { wobble: 0.3 });
 
@@ -300,6 +301,21 @@
   // where a point on strand f (u from root 0 to tip 1) is right now, in centimetres
   const strandCm = (f, u, t, o) => headToCm(hairPt(f, Math.round(u * (M - 1)), t, o.wind == null ? 1 : o.wind), o.tilt || 0);
 
+  // a hand from the side, wrist at (x, y), fingers curved down onto the keys, thumb tucked
+  // under; on each note the fingertips press down a little
+  const HAND = [[0, -1.7], [-3, -2.4], [-6, -2.8], [-8.6, -2.3], [-10.4, -1.0], [-11.6, 0.8], [-12.2, 2.6], [-11.6, 3.3], [-10.8, 2.7], [-9.6, 1.3],
+    [-7.8, 1.6], [-6.6, 2.5], [-7.3, 3.6], [-6.7, 4.1], [-5.2, 3.1], [-3.4, 2.2], [0, 1.7]];
+  const FINGERS = [0.9, 1.8].map((d) => [[-8.0 + d, -2.0 + d * 0.3], [-9.8 + d, -0.6 + d * 0.4], [-11.0 + d, 1.2 + d * 0.5], [-11.4 + d, 2.8 + d * 0.5]]);
+  function hand(ctx, x, y, W, press, alpha) {
+    const bend = (P) => P.map(([hx, hy]) => [x + hx, y + hy + press * 0.9 * clamp(-hx / 12)]);
+    const P = bend(pts.curve(HAND, 4));
+    ctx.globalAlpha = alpha; fill(ctx, P, Pen.PAPER);
+    ctx.strokeStyle = Pen.INK; ctx.lineWidth = W * 0.75;
+    ctx.beginPath(); P.forEach(([a, b], i) => (i ? ctx.lineTo(a, b) : ctx.moveTo(a, b))); ctx.closePath(); ctx.stroke();
+    ctx.lineWidth = W * 0.45;
+    for (const F of FINGERS) { const Q = bend(pts.curve(F, 4)); ctx.beginPath(); Q.forEach(([a, b], i) => (i ? ctx.lineTo(a, b) : ctx.moveTo(a, b))); ctx.stroke(); }
+    ctx.globalAlpha = 1;
+  }
   function scene(ctx, t, o) {
     // o: { x, y, s } places centimetre (0, 0) at world (x, y), s px per cm
     const R = (a, b) => seg(t, o.reveal + a, o.reveal + b);
@@ -317,10 +333,10 @@
     fill(ctx, PIANO.desk, Pen.PAPER); wax(PIANO.desk, WOOD, { prog: R(0.5, 1.0), alpha: 0.55, dx: 0, dy: 0, seed: 125 });
     fill(ctx, PIANO.sheet, '#fbf8f1'); inkGroup(sheetLines, R(0.7, 1.0), { w: W * 0.3, alpha: 0.7 });
     fill(ctx, PIANO.keybed, Pen.PAPER); wax(PIANO.keybed, WOOD, { prog: R(0.5, 1.0), alpha: 0.6, dx: 0, dy: 0, seed: 126 });
-    fill(ctx, PIANO.keys, '#fbf8f1');
+    fill(ctx, KEYS, '#fbf8f1');
     if (R(0.7, 0.71) > 0) { ctx.globalAlpha = 0.9; for (const b of BLACK) fill(ctx, b, Pen.INK); ctx.globalAlpha = 1; }
     inkGroup(pianoInk, R(0, 0.9), { w: W });
-    ink(stroke(PIANO.keys.concat([PIANO.keys[0]]), { wobble: 0.05, seed: 127 }), { prog: R(0.6, 0.9), w: W * 0.7 });
+    ink(stroke(KEYS.concat([KEYS[0]]), { wobble: 0.05, seed: 127 }), { prog: R(0.6, 0.9), w: W * 0.7 });
     inkGroup(keyLines, R(0.7, 0.9), { w: W * 0.4 });
     // far leg and far arm, behind her
     const p = K.press(t, 0), q = K.press(t, 1);
@@ -329,7 +345,7 @@
       wax(BODY.shoeFar, SHOE, { prog: R(0.6, 0.9), alpha: 0.6, dx: 0.5, dy: -0.4, seed: 130 });
       inkGroup(farInk, R(0.4, 0.9), { w: W * 0.8, alpha: 0.7 });
       ctx.fillStyle = Pen.PAPER; ctx.strokeStyle = Pen.INK; ctx.lineWidth = W * 0.7; ctx.globalAlpha = 0.8;
-      ctx.beginPath(); ctx.ellipse(3, -79.4 + 0.6 * q, 3.4, 1.8, -0.1, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.globalAlpha = 1;
+      hand(ctx, 8, -81.5, W, q, 0.8);
     }
     // bench, body, dress
     wax(BODY.bench, '#8a6a52', { prog: R(0.5, 0.9), alpha: 0.6, dx: 0.6, dy: -0.4, seed: 131 });
@@ -346,10 +362,7 @@
       wax(SLEEVE.poly, DRESS, { prog: R(0.6, 1.0), dx: 0.6, dy: -0.4, seed: 135 });
       inkGroup(armInk, R(0.6, 1.0), { w: W * 0.9 });
       ctx.fillStyle = Pen.PAPER; ctx.strokeStyle = Pen.INK; ctx.lineWidth = W * 0.8;
-      ctx.save(); ctx.translate(11, -78 + 0.7 * p); ctx.rotate(-0.12);
-      ctx.beginPath(); ctx.ellipse(0, 0, 3.8, 2.2, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-      ctx.beginPath(); for (const fx of [-3, -1.2, 0.6]) { ctx.moveTo(fx, 1.4); ctx.lineTo(fx - 0.8, 3.2); } ctx.stroke();
-      ctx.restore();
+      hand(ctx, 17, -79.5, W, p, 1);
     }
     ctx.restore();
     TEX = 1;
@@ -536,11 +549,11 @@
   }
 
   const frame = K.film([
-    { start: -1, draw: shotLine, caption: 'one line, early in the morning,' },
-    { start: B[2], draw: shotWide, caption: 'a girl at a piano, out in the fields,' },
-    { start: B[3], draw: shotMid, caption: 'each note went up on the wind,' },
-    { start: B[4], draw: shotClose, caption: 'along her flaxen hair,' },
-    { start: B[5], draw: shotSky, caption: 'and one by one, they drew her.' },
+    { start: -1, draw: shotLine, caption: 'a tune begins as a single line,' },
+    { start: B[2], draw: shotWide, caption: 'she plays it, and lets each note go,' },
+    { start: B[3], draw: shotMid, caption: 'but what we let go does not leave us,' },
+    { start: B[4], draw: shotClose, caption: 'it passes through us and learns our shape,' },
+    { start: B[5], draw: shotSky, caption: 'and one by one, it draws us back.' },
   ], {
     duration: DURATION, strip: null, dissolve: 1.2,
     final: { at: 75.6, title: 'la fille aux cheveux de lin.', size: 54, credit: 'Claude Debussy, Preludes I, no. 8 (abridged)   /   Luis Kolodin, piano (CC BY-SA 4.0)' },
