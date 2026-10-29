@@ -36,16 +36,11 @@
   // ===================== her profile (head units: crown to chin is about 290) =====================
   // one drawing serves three times: her head in the film, the shape the opening line bends
   // into, and the line the notes draw in the sky at the end.
-  const FACE = [[-112, 238], [-74, 206], [-66, 176], [-70, 140], [-90, 111], [-112, 94], [-106, 76], [-118, 64], [-112, 55], [-121, 48], [-118, 36], [-134, 26], [-112, -10], [-116, -32], [-112, -64], [-98, -100]];
+  const FACE = [[-104, 240], [-66, 226], [-50, 205], [-46, 172], [-51, 142], [-64, 122], [-86, 110], [-104, 97], [-104, 79], [-115, 66], [-109, 57], [-118, 49], [-115, 37], [-131, 26], [-111, -10], [-115, -32], [-111, -64], [-98, -100]];
   const OUTER = [[-92, -130], [-64, -160], [-14, -176], [44, -170], [96, -140], [130, -94], [146, -40], [152, 30], [158, 100], [170, 170], [192, 230], [226, 280], [262, 312], [278, 332], [252, 338]];
-  const FRONT = [[212, 318], [168, 284], [128, 240], [96, 190], [70, 142], [46, 108], [26, 86]];
-  const JAW = [[16, 50], [-6, 76], [-40, 98], [-80, 111]];
+  const FRONT = [[200, 318], [154, 282], [110, 240], [72, 196], [46, 150], [32, 112], [26, 86]];
+  const JAW = [[16, 50], [-8, 76], [-44, 98], [-80, 109]];
   const TEMPLE = [[-98, -100], [-70, -96], [-44, -72], [-22, -36], [-6, 10], [10, 52], [26, 86]];
-  const LOCKS = [
-    [[-40, -150], [40, -142], [96, -100], [118, -30], [124, 50], [134, 130], [156, 200], [190, 260], [230, 306]],
-    [[-60, -118], [10, -122], [62, -86], [84, -20], [90, 60], [102, 140], [126, 210], [166, 270], [204, 310]],
-    [[-66, -100], [-10, -96], [30, -56], [46, 10], [56, 80], [76, 150], [110, 220], [150, 280]],
-  ];
   const EYE = [[-98, -12], [-88, -6], [-76, -5], [-66, -9]], BROW = [[-102, -36], [-88, -42], [-72, -40]];
   // behind the neck the hair ripples, like hair in a breeze
   const ripple = ([x, y]) => [x + 9 * clamp((y - 40) / 80) * clamp((x - 40) / 40) * Math.sin(y / 32), y];
@@ -56,7 +51,15 @@
   const PORTRAIT = stroke(PORTRAIT_HU.map(SKY_AT), { seed: 300, wobble: 1, step: 2.5 });
   const PORTRAIT_GUIDE = stroke(PORTRAIT_HU.map(SKY_AT), { seed: 301, wobble: 1.4, step: 3 });
   const PORTRAIT_HAIR = PORTRAIT_HAIR_HU.map(SKY_AT);
-  const PORTRAIT_LOCKS = group(LOCKS.map((l) => pts.curve(l, 8).map(ripple).map(SKY_AT)), { wobble: 0.6 });
+  // its hair, once the line is done: fine strands between the hairline and the outline, like hers
+  const P_OUT = resample(pts.curve([TEMPLE[0]].concat(OUTER), 8).map(ripple).map(SKY_AT), 40);
+  const P_IN = resample(pts.curve(TEMPLE.concat(FRONT.slice().reverse().slice(1)), 8).map(ripple).map(SKY_AT), 40);
+  function skyStrand(f, t) {
+    return P_OUT.map((a, i) => {
+      const b = P_IN[i], u = i / 39, w = smooth(clamp((u - 0.3) / 0.7)), ph = Math.PI * 2 * 0.2 * t - 3.5 * u + f * 2.2 + 0.7 * Math.sin(f * 23);
+      return [lerp(b[0], a[0], f) + 2.5 * Math.sin(i * 0.45 + f * 17) * Math.min(1, u * 4) + w * 6 * Math.sin(ph), lerp(b[1], a[1], f) - w * 3 * Math.sin(ph + 0.8)];
+    });
+  }
   const PORTRAIT_EYE = group([pts.curve(EYE, 6).map(SKY_AT), pts.curve(BROW, 6).map(SKY_AT)].concat(
     [0.35, 0.6, 0.85].map((u) => { const [x, y] = at(pts.curve(EYE, 6), u); return [SKY_AT([x, y]), SKY_AT([x - 4, y + 9])]; })), { wobble: 0.3 });
   function portraitAt(u) {
@@ -167,8 +170,8 @@
     });
     return { poly: side(1).concat(side(-1).reverse()), lines: [side(1), side(-1)] };
   };
-  const ARM = limb([[64, -97], [58, -84], [53, -74], [38, -73], [23, -74]], 3.6, 2.6);
-  const ARM_FAR = limb([[60, -96], [52, -76], [36, -75], [18, -75]], 3.4, 2.4);
+  const ARM = limb([[64, -97], [58, -84], [52, -75], [34, -75], [14, -77.5]], 3.6, 2.5);
+  const ARM_FAR = limb([[60, -96], [52, -77], [32, -77], [6, -79]], 3.4, 2.3);
   const SLEEVE = limb([[65, -98], [62, -91], [60, -87]], 4.4, 4.2);
   const bodyInk = group([
     BODY.bench.concat([BODY.bench[0]]), ...BODY.benchLegs,
@@ -178,29 +181,43 @@
   ], { wobble: 0.35 });
   const farInk = group([[[29, -40], [24, -9]], [[36, -40], [31, -9]], BODY.shoeFar.concat([BODY.shoeFar[0]])].concat(ARM_FAR.lines), { wobble: 0.35 });
   const armInk = group(ARM.lines.concat(SLEEVE.lines), { wobble: 0.3 });
+  // a grand piano from its long side: rim with mouldings, lid propped open with the gold plate and
+  // strings showing beneath it, music desk with a sheet, tapered legs, the pedal lyre, and the
+  // keyboard turned a little toward us so its black and white keys show
   const PIANO = {
     body: [[-6, -100], [-184, -100], [-194, -96], [-199, -83], [-194, -70], [-184, -66], [-6, -66]],
-    lid: [[-30, -100], [-78, -172], [-186, -138], [-196, -100]],
-    keys: [[14, -73], [-6, -73], [-4, -77], [12, -77]],
-    keybed: [[14, -73], [-6, -73], [-6, -65], [14, -65]],
-    stand: [[-10, -100], [-22, -126], [-17, -127], [-6, -100]],
+    lid: [[-30, -101], [-78, -172], [-186, -138], [-196, -101]],
+    plate: [[-34, -100], [-52, -108], [-110, -116], [-170, -110], [-192, -101]],
+    desk: [[-6, -100], [-20, -128], [-14, -129], [0, -100]],
+    sheet: [[-8, -104], [-19, -126], [-15, -127], [-4, -105]],
+    cheek: [[18, -66], [18, -80], [20, -82], [21, -66]],
+    keys: [[16, -73], [-6, -73], [-8, -79], [14, -79]],
+    keybed: [[18, -73], [-6, -73], [-6, -66], [18, -66]],
   };
+  const leg = (x) => [[[x - 3, -66], [x - 2, -4]], [[x + 3, -66], [x + 2, -4]], [[x - 3.6, -61], [x + 3.6, -61]]];
   const pianoInk = group([
-    PIANO.body.concat([PIANO.body[0]]), PIANO.lid, [[-116, -100], [-116, -160]],
-    PIANO.keys.concat([PIANO.keys[0]]), PIANO.keybed.concat([PIANO.keybed[0]]), PIANO.stand,
-    [[-12, -66], [-11, 0]], [[-18, -66], [-17, 0]], [[-180, -66], [-181, 0]], [[-186, -66], [-187, 0]],
-    [[-2, -66], [-2, -6], [12, -6]], [[4, -66], [4, -9]],
-  ], { wobble: 0.35 });
-  const keyTicks = group(Array.from({ length: 9 }, (_, i) => { const x = 12 - i * 2.1; return [[x, -73], [x + 0.6, -76.6]]; }), { wobble: 0.05 });
+    PIANO.body.concat([PIANO.body[0]]), [[-6, -96], [-188, -96]], [[-6, -70], [-188, -70]],
+    PIANO.lid, [[-80, -168], [-187, -135]], [[-116, -100], [-116, -158]],
+    PIANO.desk.concat([PIANO.desk[0]]), PIANO.cheek, PIANO.keybed.concat([PIANO.keybed[0]]),
+    ...leg(-14), ...leg(-182),
+    [[-1, -66], [-1, -9]], [[5, -66], [5, -9]], [[-4, -9], [8, -9], [8, -5], [-4, -5], [-4, -9]], [[8, -7.5], [13, -6.5]], [[8, -6], [12.5, -4.5]],
+  ], { wobble: 0.3 });
+  const strings = group(Array.from({ length: 7 }, (_, i) => [[-40 - i * 2, -101.5 - i * 0.6], [-186 + i, -101.5 - i * 0.5]]), { wobble: 0.15 });
+  const sheetLines = group(Array.from({ length: 5 }, (_, i) => { const y = -109 - i * 3.2, x = -8 - (-104 - y) * 0.5; return [[x - 1, y], [x + 2.5, y - 0.4]]; }), { wobble: 0.05 });
+  // white keys every 2.2 cm, black keys in twos and threes over the far part of the band
+  const KEY_W = 2.2, KEY_N = 10;
+  const keyAt = (k, v) => [16 - k * KEY_W - v * 2, -73 - v * 6];
+  const keyLines = group(Array.from({ length: KEY_N - 1 }, (_, i) => [keyAt(i + 1, 0), keyAt(i + 1, 1)]), { wobble: 0.05 });
+  const BLACK = [1, 2, 4, 5, 6, 8, 9].filter((k) => k < KEY_N).map((k) => [keyAt(k - 0.3, 1), keyAt(k + 0.3, 1), keyAt(k + 0.3, 0.4), keyAt(k - 0.3, 0.4)]);
   const r0 = rng(5);
   const SHADE = group(Array.from({ length: 34 }, (_, i) => { const x = -200 + i * 9 + r0() * 4 - (i > 22 ? -40 : 0), y = r0() * 3; return [[x, y + 1], [x + 7 + r0() * 3, y + 1]]; }), { wobble: 0.3 });
 
   // ---- her hair: fine strands between the hairline and the outline of the hair, falling down her
   // back to below the shoulders and lifted to the right by the breeze. The same shape as the profile.
   const OUTER_G = [[-98, -100]].concat(OUTER.slice(0, 9), [[178, 170], [204, 240], [238, 310], [272, 372], [296, 426]]);
-  const INNER_G = TEMPLE.concat([[48, 140], [66, 200], [98, 262], [138, 322], [184, 380], [262, 438]]);
+  const INNER_G = TEMPLE.concat([[34, 140], [46, 200], [80, 262], [124, 322], [172, 380], [250, 438]]);
   const M = 48, OUT_R = resample(pts.curve(OUTER_G, 8), M), IN_R = resample(pts.curve(INNER_G, 8), M);
-  const N_STRANDS = 56;
+  const N_STRANDS = 60;
   function hairPt(f, i, t, wind) {
     const u = i / (M - 1), a = OUT_R[i], b = IN_R[i];
     let x = lerp(b[0], a[0], f), y = lerp(b[1], a[1], f);
@@ -209,11 +226,14 @@
     const j = 3 * Math.sin(i * 0.45 + f * 17) * Math.min(1, u * 4);
     x += nx / nm * j; y += ny / nm * j;
     // the breeze: a wave that runs from root to tip, growing toward the tip
-    const w = smooth(clamp((u - 0.28) / 0.72)), ph = Math.PI * 2 * 0.2 * t - 3.5 * u + f * 2.2;
-    return [x + wind * w * (22 + 12 * Math.sin(ph)), y - wind * w * (10 + 6 * Math.sin(ph + 0.8))];
+    // neighbouring strands move together, but each keeps a little of its own timing, and toward
+    // the ends they part and fan out, so the hair reads strand by strand
+    const w = smooth(clamp((u - 0.28) / 0.72)), ph = Math.PI * 2 * 0.2 * t - 3.5 * u + f * 2.2 + 0.7 * Math.sin(f * 23);
+    const fan = smooth(clamp((u - 0.55) / 0.45)) * (f - 0.5) * 34;
+    return [x + wind * w * (22 + 12 * Math.sin(ph)) + fan * 0.6, y - wind * w * (10 + 6 * Math.sin(ph + 0.8)) + fan * 0.8];
   }
   const strandPts = (f, t, wind) => Array.from({ length: M }, (_, i) => hairPt(f, i, t, wind));
-  const FACE_FILL = FACE.slice(2).concat(TEMPLE.slice(1), [[52, 150], [60, 214], [-60, 214]]);
+  const FACE_FILL = FACE.slice(2).concat(TEMPLE.slice(1), [[38, 150], [46, 214], [-52, 214]]);
   const faceInk = group([pts.curve(FACE.slice(2), 8), pts.curve(JAW.slice().reverse(), 6)], { wobble: 0.4 });
   const HEAD = { x: 61, y: -101, s: 0.083, ox: -30, oy: 200 };
   // her head in centimetres, tilted about the base of the neck
@@ -235,17 +255,25 @@
     const hp = R(0.2, 1.2);
     if (hp > 0) {
       const outer = strandPts(1, t, wind), inner = strandPts(0, t, wind);
-      wax(outer.concat(inner.slice().reverse()), FLAX, { prog: hp, dx: 0, dy: 0, alpha: 0.7, seed: 66 });
+      // like her hair from the front: each strand over a wide, faint wash of flax, no outline
+      wax(outer.concat(inner.slice().reverse()), FLAX, { prog: hp, dx: 0, dy: 0, alpha: 0.22, seed: 66 });
       const upto = Math.max(2, Math.round(M * clamp(hp * 1.3)));
+      const paths = [];
       for (let k = 0; k < N_STRANDS; k++) {
         // strands end at slightly different lengths, so the ends of her hair are soft
-        const f = k / (N_STRANDS - 1), P = strandPts(f, t, wind).slice(0, M - Math.floor(((k * 0.618034) % 1) * 7)), navy = k % 6 === 0;
-        ctx.strokeStyle = navy ? Pen.INK : HAIR_INK; ctx.globalAlpha = navy ? 0.4 : 0.6;
-        ctx.lineWidth = px(Math.max(0.55, (navy ? 1.0 : 0.85) * Math.pow(S / 1.16, 0.35)));
-        ctx.beginPath(); for (let i = 0; i < Math.min(upto, P.length); i++) i ? ctx.lineTo(P[i][0], P[i][1]) : ctx.moveTo(P[i][0], P[i][1]); ctx.stroke();
+        const f = k / (N_STRANDS - 1), P = strandPts(f, t, wind).slice(0, M - Math.floor(((k * 0.618034) % 1) * 7));
+        paths.push(P.slice(0, Math.min(upto, P.length)));
       }
-      ctx.globalAlpha = 0.85; ctx.strokeStyle = Pen.INK; ctx.lineWidth = px(1.6 * Math.pow(S / 1.16, 0.3));
-      for (const P of [outer, inner]) { ctx.beginPath(); for (let i = 0; i < upto; i++) i ? ctx.lineTo(P[i][0], P[i][1]) : ctx.moveTo(P[i][0], P[i][1]); ctx.stroke(); }
+      const line = (P) => { ctx.beginPath(); P.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke(); };
+      ctx.strokeStyle = FLAX; ctx.globalAlpha = 0.16; ctx.lineWidth = 16;
+      paths.forEach(line);
+      paths.forEach((P, k) => {
+        const navy = k % 5 === 2;
+        ctx.strokeStyle = navy ? Pen.INK : HAIR_INK; ctx.lineWidth = px(Math.max(0.6, (navy ? 1.1 : 1.0) * Math.pow(S / 1.16, 0.35)));
+        // near the hairline the strands crowd together, so they start out lighter
+        ctx.globalAlpha = (navy ? 0.45 : 0.7) * 0.45; line(P.slice(0, 7));
+        ctx.globalAlpha = navy ? 0.45 : 0.7; line(P.slice(6));
+      });
       ctx.globalAlpha = 1;
     }
     // eye and brow: closed while she plays; at the end she opens them and looks up
@@ -284,9 +312,16 @@
     fill(ctx, PIANO.lid, Pen.PAPER); fill(ctx, PIANO.body, Pen.PAPER);
     wax(PIANO.lid, WOOD_LID, { prog: R(0.5, 1.1), alpha: 0.45, dx: 1.6, dy: -1.2, seed: 120 });
     wax(PIANO.body, WOOD, { prog: R(0.4, 1.0), alpha: 0.6, dx: 1.6, dy: -0.8, seed: 121 });
-    wax(PIANO.keys, '#ffffff', { prog: R(0.6, 0.9), alpha: 0.95, dx: 0, dy: 0, seed: 122 });
+    wax(PIANO.plate, '#e2b55a', { prog: R(0.5, 1.0), alpha: 0.7, dx: 0, dy: 0, seed: 124 });
+    inkGroup(strings, R(0.6, 1.0), { w: W * 0.35, alpha: 0.6 });
+    fill(ctx, PIANO.desk, Pen.PAPER); wax(PIANO.desk, WOOD, { prog: R(0.5, 1.0), alpha: 0.55, dx: 0, dy: 0, seed: 125 });
+    fill(ctx, PIANO.sheet, '#fbf8f1'); inkGroup(sheetLines, R(0.7, 1.0), { w: W * 0.3, alpha: 0.7 });
+    fill(ctx, PIANO.keybed, Pen.PAPER); wax(PIANO.keybed, WOOD, { prog: R(0.5, 1.0), alpha: 0.6, dx: 0, dy: 0, seed: 126 });
+    fill(ctx, PIANO.keys, '#fbf8f1');
+    if (R(0.7, 0.71) > 0) { ctx.globalAlpha = 0.9; for (const b of BLACK) fill(ctx, b, Pen.INK); ctx.globalAlpha = 1; }
     inkGroup(pianoInk, R(0, 0.9), { w: W });
-    inkGroup(keyTicks, R(0.7, 0.9), { w: W * 0.5 });
+    ink(stroke(PIANO.keys.concat([PIANO.keys[0]]), { wobble: 0.05, seed: 127 }), { prog: R(0.6, 0.9), w: W * 0.7 });
+    inkGroup(keyLines, R(0.7, 0.9), { w: W * 0.4 });
     // far leg and far arm, behind her
     const p = K.press(t, 0), q = K.press(t, 1);
     if (R(0.4, 0.41) > 0) {
@@ -294,7 +329,7 @@
       wax(BODY.shoeFar, SHOE, { prog: R(0.6, 0.9), alpha: 0.6, dx: 0.5, dy: -0.4, seed: 130 });
       inkGroup(farInk, R(0.4, 0.9), { w: W * 0.8, alpha: 0.7 });
       ctx.fillStyle = Pen.PAPER; ctx.strokeStyle = Pen.INK; ctx.lineWidth = W * 0.7; ctx.globalAlpha = 0.8;
-      ctx.beginPath(); ctx.ellipse(13, -76.6 + 0.8 * q, 3.4, 1.9, -0.15, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.globalAlpha = 1;
+      ctx.beginPath(); ctx.ellipse(3, -79.4 + 0.6 * q, 3.4, 1.8, -0.1, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.globalAlpha = 1;
     }
     // bench, body, dress
     wax(BODY.bench, '#8a6a52', { prog: R(0.5, 0.9), alpha: 0.6, dx: 0.6, dy: -0.4, seed: 131 });
@@ -311,7 +346,7 @@
       wax(SLEEVE.poly, DRESS, { prog: R(0.6, 1.0), dx: 0.6, dy: -0.4, seed: 135 });
       inkGroup(armInk, R(0.6, 1.0), { w: W * 0.9 });
       ctx.fillStyle = Pen.PAPER; ctx.strokeStyle = Pen.INK; ctx.lineWidth = W * 0.8;
-      ctx.save(); ctx.translate(20, -74.4 + 0.9 * p); ctx.rotate(-0.12);
+      ctx.save(); ctx.translate(11, -78 + 0.7 * p); ctx.rotate(-0.12);
       ctx.beginPath(); ctx.ellipse(0, 0, 3.8, 2.2, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
       ctx.beginPath(); for (const fx of [-3, -1.2, 0.6]) { ctx.moveTo(fx, 1.4); ctx.lineTo(fx - 0.8, 3.2); } ctx.stroke();
       ctx.restore();
@@ -405,8 +440,17 @@
     const j = joined(t), done = smooth(seg(t, B[6] + 0.2, B[6] + 2.4));
     if (pencil > 0) guide(PORTRAIT_GUIDE, { alpha: 0.7 * pencil * (1 - done) });
     if (done > 0) {
-      crayon(PORTRAIT_HAIR, FLAX, { prog: done, alpha: 0.6, dx: 3, dy: -2, seed: 140 });
-      inkGroup(PORTRAIT_LOCKS, done, { w: 1.4, color: HAIR_INK, alpha: 0.8 });
+      crayon(PORTRAIT_HAIR, FLAX, { prog: done, alpha: 0.22, dx: 3, dy: -2, seed: 140 });
+      const upto = Math.max(2, Math.round(40 * done));
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      for (let k = 0; k <= 34; k++) {
+        const P = skyStrand(k / 34, t).slice(0, upto - (k * 7) % 4);
+        ctx.strokeStyle = FLAX; ctx.globalAlpha = 0.16; ctx.lineWidth = 14;
+        ctx.beginPath(); P.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke();
+        ctx.strokeStyle = k % 5 === 2 ? Pen.INK : HAIR_INK; ctx.globalAlpha = k % 5 === 2 ? 0.45 : 0.7; ctx.lineWidth = 1;
+        ctx.beginPath(); P.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
       inkGroup(PORTRAIT_EYE, seg(t, B[6] + 1.2, B[6] + 2.6), { w: 2.4 });
     }
     if (j > 0) ink(PORTRAIT, { prog: j, w: 3.2 });

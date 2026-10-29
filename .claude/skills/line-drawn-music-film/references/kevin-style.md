@@ -75,11 +75,15 @@ Run `scripts/study_reference.py` on any of them.
   interpolated between two curves (the hairline and the outer outline of the hair), so the hair
   and the head are one shape; a faint flax underlay; strands ending at slightly different
   lengths; and a breeze wave travelling root to tip, growing toward the tip, neighbouring
-  strands in phase (`flaxen/js/film.js`, `hairPt`).
+  strands in phase (`flaxen/js/film.js`, `hairPt`). Don't outline the hair: two contour lines
+  around it made it look like a shape filled with lines; strands alone over a wide faint flax
+  stroke each read as real, soft hair.
 - A front-facing girl with a full bust read as odd and out of scale next to a piano. A full
   figure in side view, drawn in centimetres at real proportions (keys 72 cm, seated head top
   ~130 cm, grand piano ~2 m), read as a person playing. Profile only: forehead, nose, lips,
-  chin, a jaw line that rises toward the ear, a closed eye as one lash curve.
+  chin, a jaw line that rises toward the ear, a slim neck, a closed eye as one lash curve. A
+  piano reads as a piano when its keys show as vertical black and white keys: turn the keyboard
+  slightly toward the camera even in a side view.
 - A raised single finger reads as rude; small circles next to eyes read as more eyes.
 
 ## Turning this into code (what worked here)
