@@ -478,7 +478,7 @@
   // the notes that wait in the sky, each at its own place along the pencilled profile
   const SKY_NOTES = between(mel, B[2] - 0.3, 61.2), LATE_NOTES = between(mel, 61.2, DURATION);
   const r3 = rng(31);
-  SKY_NOTES.forEach((n, i) => { n.u = (i + 0.5) / SKY_NOTES.length * 0.98; n.home = portraitAt(n.u); n.off = [(r3() - 0.5) * 26, (r3() - 0.5) * 20]; });
+  SKY_NOTES.forEach((n, i) => { n.u = (i + 0.5) / SKY_NOTES.length * 0.95; n.home = portraitAt(n.u); n.off = [(r3() - 0.5) * 26, (r3() - 0.5) * 20]; });
   // the closing arpeggio inks the line in, a little further with each note
   const JOIN = between(mel, B[5], B[6]);
   const joined = (t) => JOIN.reduce((a, n) => a + ease(clamp((t - n.t + 0.2) / 1.4)), 0) / JOIN.length;
@@ -488,10 +488,13 @@
     if (pencil > 0) guide(PORTRAIT_GUIDE, { alpha: 0.7 * pencil * (1 - done) });
     if (done > 0) {
       crayon(PORTRAIT_HAIR, FLAX, { prog: done, alpha: 0.22, dx: 3, dy: -2, seed: 140 });
-      const upto = Math.max(2, Math.round(40 * done));
+      // strands grow from the crown at a steady rate, each a little behind its neighbour
       ctx.lineCap = 'round'; ctx.lineJoin = 'round';
       for (let k = 0; k <= 34; k++) {
-        const P = skyStrand(k / 34, t).slice(0, upto - (k * 7) % 4);
+        const len = clamp(done * 1.15 - ((k * 7) % 4) * 0.04) * 39;
+        if (len < 1) continue;
+        const Q = skyStrand(k / 34, t), m = Math.floor(len), P = Q.slice(0, m + 1);
+        if (m < 39) { const a = Q[m], b = Q[m + 1], f = len - m; P.push([lerp(a[0], b[0], f), lerp(a[1], b[1], f)]); }
         ctx.strokeStyle = FLAX; ctx.globalAlpha = 0.16; ctx.lineWidth = 14;
         ctx.beginPath(); P.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke();
         ctx.strokeStyle = k % 5 === 2 ? Pen.INK : HAIR_INK; ctx.globalAlpha = k % 5 === 2 ? 0.45 : 0.7; ctx.lineWidth = 1;
@@ -510,7 +513,7 @@
       const home = [n.home[0] + (n.off[0] + 5 * Math.sin(0.5 * t + n.i)) * free, n.home[1] + (n.off[1] + 4 * Math.sin(0.4 * t + 2 * n.i)) * free];
       const [x, y] = flight(n, t, o, T_WIDE, home);
       // once the line has reached it, the note melts into the line
-      const gone = Math.max(clamp((j - n.u) * 9), smooth(seg(t, B[6] + 0.5, B[6] + 2)));
+      const gone = Math.max(clamp((j - n.u) / 0.03), smooth(seg(t, B[6] + 0.5, B[6] + 2)));
       glyph(ctx, n, x, y, t, lerp(0.4, 0.55, free), clamp((t - n.t) / 0.4) * (1 - gone));
     }
     for (const n of LATE_NOTES) {
