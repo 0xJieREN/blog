@@ -1,0 +1,17 @@
+<!doctype html><meta charset="utf-8"><body style="margin:0;background:#fff">
+<canvas id="c" width="2160" height="1620"></canvas>
+<script src="../js/species.js"></script>
+<script>
+// All fourteen specimens, flat, on one sheet (tools/shot.cjs screenshots it).
+const c = document.getElementById('c'), g = c.getContext('2d');
+g.fillStyle = '#efe8d8'; g.fillRect(0, 0, c.width, c.height);
+Species.SPECIES.forEach((sp, i) => {
+  const t = document.createElement('canvas'); t.width = t.height = 1080;
+  const tg = t.getContext('2d'); tg.fillStyle = sp.light ? '#2a2a2a' : '#f4efe4'; tg.fillRect(0, 0, 1080, 1080);
+  Species.flat(tg, sp);
+  const x = (i % 6) * 360, y = Math.floor(i / 6) * 360;
+  g.drawImage(t, x, y, 356, 356);
+  g.fillStyle = '#c00'; g.font = '18px sans-serif'; g.fillText((i + 1) + ' ' + sp.name, x + 6, y + 20);
+});
+window.done = true;
+</script>
