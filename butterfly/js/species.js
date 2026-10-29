@@ -203,7 +203,7 @@
       body: { head: 0.06, thorax: [0.09, 0.13], abd: [0.68, 0.08], c: '#5f7a46', thoraxC: '#55703f', bands: ['#5f7a46', '#d9c8a8', '#5f7a46', '#4a6236', '#5f7a46', '#d9c8a8', '#5f7a46'], ant: [[0.03, -0.22], [0.1, -0.32], [0.2, -0.38]], antW: 0.014, antC: '#d9c8a8' },
       motif: 'waves',
       grounds: [
-        { bg: '#e9efdc', layout: 'waves', size: 40, pal: ['#c4d4ab', '#ecd6c9', '#e9efdc'] },
+        { bg: '#150c11', layout: 'waves', size: 40, pal: ['#3a2230', '#1f2b1a', '#150c11'] },
         { bg: '#f1ebe0', layout: 'waves', size: 70, pal: ['#b9cb9e', '#f1ebe0', '#e6cfc0'] },
         { bg: '#e3ead6', layout: 'scatter', size: 120, pal: ['#c3d3a8', '#d9c7b8', '#e3ead6'] },
       ],
