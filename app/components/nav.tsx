@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ThemeToggle } from './theme-toggle'
+import { Logo } from './logo'
 
 export function Navbar() {
   const pathname = usePathname()
@@ -20,31 +20,26 @@ export function Navbar() {
       <Link
         className="identity"
         href={isEnglish ? '/en' : '/'}
-        aria-label={isEnglish ? "Jared's homepage" : '杰的个人主页'}
+        aria-label={isEnglish ? "Jared's homepage" : '愚人节的个人主页'}
       >
-        <span className="identity-name">{isEnglish ? 'Jared' : '杰'}</span>
-        <span className="identity-role">
-          {isEnglish ? 'Independent developer' : '独立开发者'}
-        </span>
+        <Logo />
+        {isEnglish ? 'Jared' : '愚人节'}
       </Link>
-      <div className="header-actions">
-        <nav
-          className="site-nav"
-          aria-label={isEnglish ? 'Main navigation' : '主导航'}
-        >
-          {navItems.map(({ href, name, lang }) => (
-            <Link
-              key={href}
-              href={href}
-              lang={lang}
-              aria-current={pathname === href ? 'page' : undefined}
-            >
-              {name}
-            </Link>
-          ))}
-        </nav>
-        <ThemeToggle language={isEnglish ? 'en' : 'zh-CN'} />
-      </div>
+      <nav
+        className="site-nav"
+        aria-label={isEnglish ? 'Main navigation' : '主导航'}
+      >
+        {navItems.map(({ href, name, lang }) => (
+          <Link
+            key={href}
+            href={href}
+            lang={lang}
+            aria-current={pathname === href ? 'page' : undefined}
+          >
+            {name}
+          </Link>
+        ))}
+      </nav>
     </header>
   )
 }

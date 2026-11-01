@@ -6,7 +6,7 @@ export default function Page() {
     <div className="home-page">
       <section className="intro" aria-label="介绍">
         <p>
-          我是杰，一名关注 <em>AI</em> 和 <em>Finance</em> 的独立开发者。
+          我是愚人节，一名关注 <em>AI</em> 和 <em>Finance</em> 的独立开发者。
         </p>
         <p>
           这里主要记录投资思考、软件开发、AI
@@ -22,10 +22,7 @@ export default function Page() {
         <FeaturedPosts limit={5} />
       </section>
 
-      <section className="section" aria-labelledby="connect">
-        <div className="section-label">
-          <h2 id="connect">找到我</h2>
-        </div>
+      <section className="section" aria-label="找到我">
         <p className="text">
           代码在{' '}
           <a href="https://github.com/0xJieREN" target="_blank" rel="noopener noreferrer">
