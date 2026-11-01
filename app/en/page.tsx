@@ -50,10 +50,7 @@ export default function EnglishPage() {
         </p>
       </section>
 
-      <section className="section" aria-labelledby="english-connect">
-        <div className="section-label">
-          <h2 id="english-connect">Connect</h2>
-        </div>
+      <section className="section" aria-label="Connect">
         <p className="text">
           You can find my code on{' '}
           <a href="https://github.com/0xJieREN" target="_blank" rel="noopener noreferrer">

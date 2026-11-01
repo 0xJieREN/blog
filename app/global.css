@@ -17,8 +17,9 @@
  * Tokens follow the sites this design is based on:
  * - Greys are Radix "sand" (Emil Kowalski's palette), so the neutrals lean
  *   slightly warm instead of blue.
- * - Vertical rhythm is a 28px line (Paco Coursey's grid): body text is
- *   16/28 and most gaps are multiples of it.
+ * - Vertical rhythm is a 26px line: body text is 15/26. Like Emil's site, the
+ *   scale stays narrow and weight and colour carry the hierarchy. Chinese is
+ *   one step below his 16px because its glyphs fill the whole em box.
  */
 :root {
   color-scheme: light;
@@ -27,7 +28,7 @@
   --hover: #f1f0ef;
   --line: #e9e8e6;
   --underline: #bcbbb5;
-  --tertiary: #8d8d86;
+  --tertiary: #6e6e68;
   --secondary: #63635e;
   --text: #3b3a37;
   --foreground: #21201c;
@@ -42,44 +43,20 @@
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo,
     monospace;
 
-  --line-height: 28px;
+  --line-height: 26px;
   --gutter: max(24px, env(safe-area-inset-left), env(safe-area-inset-right));
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 
   --sh-class: #63635e;
   --sh-identifier: #21201c;
-  --sh-sign: #8d8d86;
+  --sh-sign: #6e6e68;
   --sh-string: #3f7a4f;
   --sh-keyword: #7b4fa0;
-  --sh-comment: #a3a39c;
+  --sh-comment: #73736d;
   --sh-jsxliterals: #4f5fb0;
   --sh-property: #4d6a8a;
   --sh-entity: #4d6a8a;
-}
-
-:root[data-theme='dark'] {
-  color-scheme: dark;
-  --background: #111110;
-  --surface: #191918;
-  --hover: #222221;
-  --line: #2a2a28;
-  --underline: #494844;
-  --tertiary: #7c7b74;
-  --secondary: #b5b3ad;
-  --text: #d6d5d1;
-  --foreground: #eeeeec;
-  --selection: #3b3a37;
-
-  --sh-class: #b5b3ad;
-  --sh-identifier: #eeeeec;
-  --sh-sign: #7c7b74;
-  --sh-string: #93c4a0;
-  --sh-keyword: #c6a5e0;
-  --sh-comment: #6f6d66;
-  --sh-jsxliterals: #a8b3ee;
-  --sh-property: #9fb7d1;
-  --sh-entity: #9fb7d1;
 }
 
 * {
@@ -100,7 +77,7 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: var(--font-sans);
-  font-size: 16px;
+  font-size: 15px;
   line-height: var(--line-height);
   font-feature-settings: 'cv01', 'ss03';
   font-optical-sizing: auto;
@@ -137,12 +114,6 @@ a {
   background: var(--selection);
 }
 
-/* Set on <html> for one frame while the theme flips, so nothing animates. */
-.theme-switching,
-.theme-switching * {
-  transition: none !important;
-}
-
 /* Enter motion: blocks rise 8px and fade in, one after another (Paco). */
 
 @keyframes enter {
@@ -156,31 +127,32 @@ a {
   }
 }
 
+/* The reduced-motion version: same timing, no movement. */
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
 .site-header,
-.site-main > * > *,
-.site-footer {
-  animation: enter 600ms var(--ease-out) both;
+.site-main > * > * {
+  animation: enter 280ms var(--ease-out) both;
 }
 
 .site-main > * > :nth-child(1) {
-  animation-delay: 80ms;
+  animation-delay: 50ms;
 }
 
 .site-main > * > :nth-child(2) {
-  animation-delay: 160ms;
+  animation-delay: 100ms;
 }
 
 .site-main > * > :nth-child(3) {
-  animation-delay: 240ms;
+  animation-delay: 150ms;
 }
 
-.site-main > * > :nth-child(4) {
-  animation-delay: 320ms;
-}
-
-.site-main > * > :nth-child(n + 5),
-.site-footer {
-  animation-delay: 400ms;
+.site-main > * > :nth-child(n + 4) {
+  animation-delay: 200ms;
 }
 
 /* Shell */
@@ -188,6 +160,7 @@ a {
 .site-shell {
   width: min(calc(100% - var(--gutter) * 2), 640px);
   margin: 0 auto;
+  padding-bottom: calc(84px + env(safe-area-inset-bottom));
 }
 
 .site-main {
@@ -198,36 +171,28 @@ a {
 
 .site-header {
   display: flex;
-  padding: 112px 0 0;
-  align-items: flex-start;
+  padding: 84px 0 0;
+  align-items: center;
   justify-content: space-between;
 }
 
 .identity {
-  display: flex;
-  flex-direction: column;
-  line-height: 24px;
-}
-
-.identity-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   color: var(--foreground);
   font-weight: 500;
 }
 
-.identity-role {
-  color: var(--secondary);
-}
-
-.header-actions {
-  display: flex;
-  margin-top: -6px;
-  margin-right: -10px;
-  align-items: center;
-  gap: 2px;
+.logo {
+  width: 48px;
+  height: 28px;
+  flex: none;
 }
 
 .site-nav {
   display: flex;
+  margin-right: -8px;
   gap: 2px;
 }
 
@@ -237,60 +202,24 @@ a {
   padding: 0 8px;
   align-items: center;
   color: var(--tertiary);
-  transition: color 240ms var(--ease);
+  transition:
+    color 240ms var(--ease),
+    scale 160ms var(--ease-out);
 }
 
-.site-nav a:hover {
-  color: var(--foreground);
-  transition-duration: 80ms;
+@media (hover: hover) and (pointer: fine) {
+  .site-nav a:hover {
+    color: var(--foreground);
+    transition-duration: 80ms, 160ms;
+  }
+}
+
+.site-nav a:active {
+  scale: 0.97;
 }
 
 .site-nav a[aria-current='page'] {
   color: var(--foreground);
-}
-
-.theme-toggle {
-  display: grid;
-  width: 36px;
-  height: 36px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  place-items: center;
-  color: var(--tertiary);
-  background: transparent;
-  cursor: pointer;
-  transition:
-    color 240ms var(--ease),
-    background-color 240ms var(--ease),
-    scale 160ms var(--ease);
-}
-
-.theme-toggle:hover {
-  color: var(--foreground);
-  background: var(--hover);
-  transition-duration: 80ms, 80ms, 160ms;
-}
-
-.theme-toggle:active {
-  scale: 0.92;
-}
-
-.theme-icon {
-  width: 15px;
-  height: 15px;
-}
-
-.theme-icon-sun {
-  display: none;
-}
-
-:root[data-theme='dark'] .theme-icon-moon {
-  display: none;
-}
-
-:root[data-theme='dark'] .theme-icon-sun {
-  display: block;
 }
 
 /* Inline text links: soft underline that darkens fast and fades back slow. */
@@ -307,12 +236,14 @@ a {
   transition: text-decoration-color 240ms var(--ease);
 }
 
-.intro a:hover,
-.text a:hover,
-.page-intro a:hover,
-.prose a:hover {
-  text-decoration-color: var(--foreground);
-  transition-duration: 80ms;
+@media (hover: hover) and (pointer: fine) {
+  .intro a:hover,
+  .text a:hover,
+  .page-intro a:hover,
+  .prose a:hover {
+    text-decoration-color: var(--foreground);
+    transition-duration: 80ms;
+  }
 }
 
 /* Home */
@@ -326,14 +257,20 @@ a {
   margin: 0;
 }
 
+/* The first sentence is the page's one focal point. */
+.intro p:first-child {
+  color: var(--foreground);
+  font-size: 16px;
+  font-weight: 500;
+  text-wrap: balance;
+}
+
 .intro p + p {
-  margin-top: var(--line-height);
+  margin-top: 14px;
 }
 
 .intro em {
-  color: var(--foreground);
   font-style: normal;
-  font-weight: 500;
 }
 
 [lang='en'] {
@@ -356,7 +293,7 @@ a {
 }
 
 .section {
-  margin-top: 84px;
+  margin-top: 56px;
 }
 
 .section-label {
@@ -375,18 +312,21 @@ a {
 
 .section-label a {
   color: var(--tertiary);
-  font-size: 14px;
+  font-size: 13px;
   transition: color 240ms var(--ease);
 }
 
-.section-label a:hover {
-  color: var(--foreground);
-  transition-duration: 80ms;
+@media (hover: hover) and (pointer: fine) {
+  .section-label a:hover {
+    color: var(--foreground);
+    transition-duration: 80ms;
+  }
 }
 
 .text {
   margin: 0;
   color: var(--secondary);
+  text-wrap: balance;
 }
 
 /* Post list (Paco's writing index): year in the gutter, rows ruled. */
@@ -405,7 +345,7 @@ a {
 .post-year {
   padding: 12px 0;
   color: var(--tertiary);
-  font-size: 14px;
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
   user-select: none;
 }
@@ -422,8 +362,8 @@ a {
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
   transition:
-    opacity 160ms var(--ease),
-    border-color 160ms var(--ease);
+    opacity 280ms var(--ease),
+    border-color 280ms var(--ease);
 }
 
 .post-row:first-child .post-link {
@@ -438,11 +378,11 @@ a {
 .post-link time {
   flex-shrink: 0;
   color: var(--tertiary);
-  font-size: 14px;
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .post-list:hover .post-link {
     opacity: 0.4;
   }
@@ -451,7 +391,7 @@ a {
     z-index: 1;
     border-bottom-color: var(--foreground);
     opacity: 1;
-    transition: none;
+    transition-duration: 140ms;
   }
 }
 
@@ -460,44 +400,55 @@ a {
   color: var(--secondary);
 }
 
-/* Homepage list (Emil's): title over summary, a soft block on hover. */
+/* Homepage list: one line per post, a soft block on hover. */
 
 .featured-list {
   display: flex;
-  margin: 0 -16px;
+  margin: 0 -12px;
   padding: 0;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   list-style: none;
 }
 
 .featured-link {
   display: flex;
-  padding: 12px 16px;
-  flex-direction: column;
+  padding: 8px 12px;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
   border-radius: 6px;
-  line-height: 24px;
-  transition: background-color 240ms var(--ease);
+  transition:
+    background-color 280ms var(--ease),
+    scale 160ms var(--ease-out);
 }
 
 .featured-title {
+  overflow: hidden;
+  min-width: 0;
   color: var(--foreground);
-}
-
-.featured-summary {
-  color: var(--secondary);
   text-autospace: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-@media (hover: hover) {
+.featured-link time {
+  flex-shrink: 0;
+  color: var(--tertiary);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (hover: hover) and (pointer: fine) {
   .featured-link:hover {
     background: var(--hover);
-    transition: none;
+    transition-duration: 140ms, 160ms;
   }
 }
 
 .featured-link:active {
   background: var(--hover);
+  scale: 0.98;
 }
 
 /* Archive / 404 */
@@ -572,27 +523,27 @@ a {
 
 .article-header h1 {
   margin: 0;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 600;
-  line-height: 30px;
+  line-height: var(--line-height);
 }
 
 .article-meta {
   display: block;
   color: var(--secondary);
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
 }
 
 /*
- * Long-form Chinese reads better a step up from the UI text: at 17px a
- * 640px column holds about 37 characters, close to the ~70 Latin
- * characters Emil's and Paco's articles run to. text-autospace adds the
- * thin gap between Chinese and Latin that the writing itself often omits.
+ * Chinese needs more leading than Latin, so articles run 15/27 (1.8) against
+ * Emil's 16/26.4 (1.65). A 640px column holds about 42 characters.
+ * text-autospace adds the thin gap between Chinese and Latin that the writing
+ * itself often omits.
  */
 .prose {
-  --prose-line: 30px;
+  --prose-line: 27px;
   color: var(--text);
-  font-size: 17px;
   line-height: var(--prose-line);
   text-autospace: normal;
 }
@@ -620,6 +571,7 @@ a {
   font-size: inherit;
   font-weight: 600;
   line-height: var(--prose-line);
+  scroll-margin-top: var(--line-height);
 }
 
 .prose h3,
@@ -673,8 +625,6 @@ a {
   border-left: 1px solid var(--foreground);
   color: var(--foreground);
   font-family: var(--font-serif);
-  font-size: 18px;
-  line-height: 1.7;
 }
 
 .prose blockquote p {
@@ -735,17 +685,13 @@ a {
   outline-offset: -1px;
 }
 
-:root[data-theme='dark'] .prose img {
-  outline-color: rgba(255, 255, 255, 0.08);
-}
-
 .prose table {
   display: block;
   overflow-x: auto;
   max-width: 100%;
   margin: 0 0 var(--prose-line);
   border-collapse: collapse;
-  font-size: 14px;
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
 }
 
@@ -771,7 +717,7 @@ a {
   border-top: 1px solid var(--line);
   grid-template-columns: 1fr 1fr;
   gap: 24px;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 20px;
 }
 
@@ -802,52 +748,19 @@ a {
   transition-duration: 80ms;
 }
 
-/* Footer */
-
-.site-footer {
-  position: relative;
-  display: flex;
-  margin-top: 112px;
-  padding: 28px 0 56px;
-  justify-content: space-between;
-  color: var(--tertiary);
-  font-size: 14px;
-  line-height: 20px;
-}
-
-.site-footer::before {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 48px;
-  height: 1px;
-  background: var(--line);
-  content: '';
-}
-
-.site-footer p {
-  margin: 0;
-}
-
-.site-footer a {
-  transition: color 240ms var(--ease);
-}
-
-.site-footer a:hover {
-  color: var(--foreground);
-  transition-duration: 80ms;
-}
-
 /* Small screens */
 
 @media (max-width: 560px) {
   .site-header {
-    padding-top: 64px;
+    padding-top: 56px;
   }
 
-  .intro,
-  .section {
+  .intro {
     margin-top: 56px;
+  }
+
+  .section {
+    margin-top: 42px;
   }
 
   .journal-page,
@@ -869,15 +782,6 @@ a {
     grid-column: auto;
     text-align: left;
   }
-
-  .prose blockquote {
-    font-size: 17px;
-  }
-
-  .site-footer {
-    margin-top: 84px;
-    padding-bottom: calc(42px + env(safe-area-inset-bottom));
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -885,10 +789,18 @@ a {
     scroll-behavior: auto;
   }
 
-  *,
-  *::before,
-  *::after {
-    animation: none !important;
-    transition-duration: 0.01ms !important;
+  /* Remove movement. Keep the opacity and color changes that aid reading. */
+  .site-header,
+  .site-main > * > * {
+    animation-name: fade;
+  }
+
+  .site-nav a:active,
+  .featured-link:active {
+    scale: none;
+  }
+
+  .article-back:hover svg {
+    translate: none;
   }
 }

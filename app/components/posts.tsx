@@ -11,6 +11,10 @@ function formatMonthDay(date: Date) {
   return `${month}.${day}`
 }
 
+function formatFullDate(date: Date) {
+  return `${date.getFullYear()}.${formatMonthDay(date)}`
+}
+
 function getSortedPosts(limit?: number) {
   return getBlogPosts()
     .map((post) => ({ ...post, date: toDate(post.metadata.publishedAt) }))
@@ -26,8 +30,8 @@ function EmptyPosts() {
   )
 }
 
-// Homepage list: a few recent posts with their one-line summary, the way
-// Emil's and Paco's homepages introduce writing. Dates live in the archive.
+// Homepage list: a few recent posts, one line each. Summaries stay on the
+// post pages and in link previews.
 export function FeaturedPosts({ limit }: { limit: number }) {
   let posts = getSortedPosts(limit)
 
@@ -41,9 +45,9 @@ export function FeaturedPosts({ limit }: { limit: number }) {
         <li key={post.slug}>
           <Link className="featured-link" href={`/blog/${post.slug}`}>
             <span className="featured-title">{post.metadata.title}</span>
-            {post.metadata.summary && (
-              <span className="featured-summary">{post.metadata.summary}</span>
-            )}
+            <time dateTime={post.metadata.publishedAt}>
+              {formatFullDate(post.date)}
+            </time>
           </Link>
         </li>
       ))}
