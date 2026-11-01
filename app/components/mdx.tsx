@@ -60,13 +60,43 @@ function slugify(str) {
     .trim() // Remove whitespace from both ends of a string
     .replace(/\s+/g, '-') // Replace spaces with -
     .replace(/&/g, '-and-') // Replace & with 'and'
-    .replace(/[^\w\-]+/g, '') // Remove all non-word characters except for -
+    .replace(/[^\p{L}\p{M}\p{N}_-]+/gu, '') // Keep letters and digits in any script, _ and -
     .replace(/\-\-+/g, '-') // Replace multiple - with single -
 }
 
-function createHeading(level) {
+// Headings can hold inline code, bold or links, so children may be elements.
+function getText(node) {
+  if (typeof node === 'string' || typeof node === 'number') {
+    return String(node)
+  }
+  if (Array.isArray(node)) {
+    return node.map(getText).join('')
+  }
+  return node?.props ? getText(node.props.children) : ''
+}
+
+// Returns a slug function for one document. Repeats get -1, -2, and so on.
+function createSlugger() {
+  let seen = new Set()
+
+  return (text) => {
+    let base = slugify(text) || 'heading'
+    let slug = base
+    let count = 0
+
+    while (seen.has(slug)) {
+      count += 1
+      slug = `${base}-${count}`
+    }
+
+    seen.add(slug)
+    return slug
+  }
+}
+
+function createHeading(level, getSlug) {
   const Heading = ({ children }) => {
-    let slug = slugify(children)
+    let slug = getSlug(getText(children))
     return React.createElement(
       `h${level}`,
       { id: slug },
@@ -87,12 +117,6 @@ function createHeading(level) {
 }
 
 let components = {
-  h1: createHeading(1),
-  h2: createHeading(2),
-  h3: createHeading(3),
-  h4: createHeading(4),
-  h5: createHeading(5),
-  h6: createHeading(6),
   Image: RoundedImage,
   a: CustomLink,
   code: Code,
@@ -100,10 +124,21 @@ let components = {
 }
 
 export function CustomMDX(props) {
+  let getSlug = createSlugger()
+
   return (
     <MDXRemote
       {...props}
-      components={{ ...components, ...(props.components || {}) }}
+      components={{
+        ...components,
+        h1: createHeading(1, getSlug),
+        h2: createHeading(2, getSlug),
+        h3: createHeading(3, getSlug),
+        h4: createHeading(4, getSlug),
+        h5: createHeading(5, getSlug),
+        h6: createHeading(6, getSlug),
+        ...(props.components || {}),
+      }}
     />
   )
 }
