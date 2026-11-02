@@ -43,14 +43,20 @@
  * - Vertical rhythm is a 26px line: body text is 15/26. Like Emil's site, the
  *   scale stays narrow and weight and colour carry the hierarchy. Chinese is
  *   one step below his 16px because its glyphs fill the whole em box.
+ * - Block spacing uses half-line steps only (13, 26, 39, 52, 78), after Shu
+ *   Ding's site, which spaces everything in 28 and 56. Article spacing uses
+ *   the same steps of the article's own 27px line.
  */
 :root {
   color-scheme: light;
   --background: #fdfdfc;
-  --surface: #f9f9f8;
+  /* Code fill. Code has no border, so the fill alone sets it off. */
+  --surface: #f5f5f3;
   --hover: #f1f0ef;
   --line: #e9e8e6;
   --underline: #bcbbb5;
+  /* List dates: faint at rest, --secondary on hover. 2.6:1 on the page. */
+  --faint: #a1a09a;
   --tertiary: #6e6e68;
   --secondary: #63635e;
   --text: #3b3a37;
@@ -114,6 +120,9 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  /* Drop the blank half of a full-width mark at the start of a wrapped line
+     and between adjacent marks. */
+  text-spacing-trim: space-first;
   touch-action: manipulation;
 }
 
@@ -190,7 +199,7 @@ a {
 .site-shell {
   width: min(calc(100% - var(--gutter) * 2), 640px);
   margin: 0 auto;
-  padding-bottom: calc(84px + env(safe-area-inset-bottom));
+  padding-bottom: calc(78px + env(safe-area-inset-bottom));
 }
 
 .site-main {
@@ -201,7 +210,7 @@ a {
 
 .site-header {
   display: flex;
-  padding: 84px 0 0;
+  padding: 78px 0 0;
   align-items: center;
   justify-content: space-between;
 }
@@ -279,7 +288,7 @@ a {
 /* Home */
 
 .intro {
-  margin-top: 84px;
+  margin-top: 78px;
   color: var(--secondary);
 }
 
@@ -296,7 +305,7 @@ a {
 }
 
 .intro p + p {
-  margin-top: 14px;
+  margin-top: 13px;
 }
 
 .intro em {
@@ -323,12 +332,12 @@ a {
 }
 
 .section {
-  margin-top: 56px;
+  margin-top: 52px;
 }
 
 .section-label {
   display: flex;
-  margin-bottom: 14px;
+  margin-bottom: 13px;
   align-items: baseline;
   justify-content: space-between;
 }
@@ -373,7 +382,7 @@ a {
 }
 
 .post-year {
-  padding: 12px 0;
+  padding: 13px 0;
   color: var(--tertiary);
   font-size: 13px;
   font-variant-numeric: tabular-nums;
@@ -385,7 +394,7 @@ a {
   display: flex;
   min-width: 0;
   margin-top: -1px;
-  padding: 12px 0;
+  padding: 13px 0;
   align-items: baseline;
   justify-content: space-between;
   gap: 24px;
@@ -400,16 +409,19 @@ a {
   margin-top: 0;
 }
 
+/* Titles sit one step below --foreground; hover brings them up. */
 .post-title {
   min-width: 0;
-  color: var(--foreground);
+  color: var(--text);
+  transition: color 240ms var(--ease);
 }
 
 .post-link time {
   flex-shrink: 0;
-  color: var(--tertiary);
+  color: var(--faint);
   font-size: 13px;
   font-variant-numeric: tabular-nums;
+  transition: color 240ms var(--ease);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -422,6 +434,16 @@ a {
     border-bottom-color: var(--foreground);
     opacity: 1;
     transition-duration: 140ms;
+  }
+
+  .post-link:hover .post-title {
+    color: var(--foreground);
+    transition-duration: 80ms;
+  }
+
+  .post-link:hover time {
+    color: var(--secondary);
+    transition-duration: 80ms;
   }
 }
 
@@ -456,23 +478,35 @@ a {
 .featured-title {
   overflow: hidden;
   min-width: 0;
-  color: var(--foreground);
+  color: var(--text);
   text-autospace: normal;
   text-overflow: ellipsis;
   white-space: nowrap;
+  transition: color 240ms var(--ease);
 }
 
 .featured-link time {
   flex-shrink: 0;
-  color: var(--tertiary);
+  color: var(--faint);
   font-size: 13px;
   font-variant-numeric: tabular-nums;
+  transition: color 240ms var(--ease);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .featured-link:hover {
     background: var(--hover);
     transition-duration: 140ms, 160ms;
+  }
+
+  .featured-link:hover .featured-title {
+    color: var(--foreground);
+    transition-duration: 80ms;
+  }
+
+  .featured-link:hover time {
+    color: var(--secondary);
+    transition-duration: 80ms;
   }
 }
 
@@ -486,11 +520,11 @@ a {
 .journal-page,
 .article-page,
 .not-found {
-  padding-top: 84px;
+  padding-top: 78px;
 }
 
 .page-intro {
-  margin-bottom: 56px;
+  margin-bottom: 52px;
 }
 
 .page-intro h1 {
@@ -522,7 +556,7 @@ a {
   /* Paco keeps the way back in the left margin, level with the title. */
   .article-back {
     position: absolute;
-    top: 84px;
+    top: 78px;
     right: calc(100% + 64px);
     display: inline-flex;
     align-items: center;
@@ -548,7 +582,7 @@ a {
 }
 
 .article-header {
-  margin-bottom: 56px;
+  margin-bottom: 52px;
 }
 
 .article-header h1 {
@@ -596,7 +630,7 @@ a {
 .prose h3,
 .prose h4 {
   position: relative;
-  margin: 56px 0 14px;
+  margin: calc(var(--prose-line) * 2) 0 calc(var(--prose-line) / 2);
   color: var(--foreground);
   font-size: inherit;
   font-weight: 600;
@@ -606,7 +640,7 @@ a {
 
 .prose h3,
 .prose h4 {
-  margin-top: 42px;
+  margin-top: calc(var(--prose-line) * 1.5);
 }
 
 .prose .anchor {
@@ -650,7 +684,7 @@ a {
 }
 
 .prose blockquote {
-  margin: 42px 0;
+  margin: calc(var(--prose-line) * 1.5) 0;
   padding-left: 20px;
   border-left: 1px solid var(--foreground);
   color: var(--foreground);
@@ -662,11 +696,11 @@ a {
 }
 
 .prose blockquote p + p {
-  margin-top: 14px;
+  margin-top: calc(var(--prose-line) / 2);
 }
 
 .prose hr {
-  margin: 56px 0;
+  margin: calc(var(--prose-line) * 2) 0;
   border: 0;
   border-top: 1px solid var(--line);
 }
@@ -675,8 +709,6 @@ a {
   overflow-x: auto;
   margin: 0 0 var(--prose-line);
   padding: 16px 18px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
   background: var(--surface);
   font-size: 13px;
   line-height: 1.7;
@@ -689,8 +721,7 @@ a {
 
 .prose code {
   padding: 0.12em 0.35em;
-  border: 1px solid var(--line);
-  border-radius: 5px;
+  border-radius: 4px;
   background: var(--surface);
   color: var(--foreground);
   font-family: var(--font-mono);
@@ -701,7 +732,7 @@ a {
 
 .prose pre code {
   padding: 0;
-  border: 0;
+  border-radius: 0;
   background: transparent;
   font-size: inherit;
 }
@@ -709,7 +740,7 @@ a {
 .prose img {
   max-width: 100%;
   height: auto;
-  margin: 14px 0 var(--prose-line);
+  margin: calc(var(--prose-line) / 2) 0 var(--prose-line);
   border-radius: 10px;
   outline: 1px solid rgba(0, 0, 0, 0.06);
   outline-offset: -1px;
@@ -742,8 +773,8 @@ a {
 
 .article-pager {
   display: grid;
-  margin-top: 84px;
-  padding-top: 28px;
+  margin-top: 78px;
+  padding-top: 26px;
   border-top: 1px solid var(--line);
   grid-template-columns: 1fr 1fr;
   gap: 24px;
@@ -782,21 +813,21 @@ a {
 
 @media (max-width: 560px) {
   .site-header {
-    padding-top: 56px;
+    padding-top: 52px;
   }
 
   .intro {
-    margin-top: 56px;
+    margin-top: 52px;
   }
 
   .section {
-    margin-top: 42px;
+    margin-top: 39px;
   }
 
   .journal-page,
   .article-page,
   .not-found {
-    padding-top: 56px;
+    padding-top: 52px;
   }
 
   .post-row {
