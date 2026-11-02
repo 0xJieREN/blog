@@ -1,7 +1,6 @@
 import './global.css'
 import type { Metadata, Viewport } from 'next'
-import { Inter, Newsreader } from 'next/font/google'
-import { GeistMono } from 'geist/font/mono'
+import { fontVariables } from './fonts'
 import { Navbar } from './components/nav'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
@@ -37,27 +36,9 @@ export const metadata: Metadata = {
   },
 }
 
-const inter = Inter({
-  subsets: ['latin'],
-  axes: ['opsz'],
-  variable: '--font-inter',
-  display: 'swap',
-})
-
-const newsreader = Newsreader({
-  subsets: ['latin'],
-  style: ['italic'],
-  weight: '400',
-  variable: '--font-newsreader',
-  display: 'swap',
-  preload: false,
-})
-
 export const viewport: Viewport = {
   themeColor: '#fdfdfc',
 }
-
-const cx = (...classes) => classes.filter(Boolean).join(' ')
 
 export default function RootLayout({
   children,
@@ -65,11 +46,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html
-      lang="zh-CN"
-      data-scroll-behavior="smooth"
-      className={cx(inter.variable, newsreader.variable, GeistMono.variable)}
-    >
+    <html lang="zh-CN" data-scroll-behavior="smooth" className={fontVariables}>
       <body>
         <div className="site-shell">
           <Navbar />
