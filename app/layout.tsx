@@ -2,6 +2,7 @@ import './global.css'
 import type { Metadata, Viewport } from 'next'
 import { fontVariables } from './fonts'
 import { Navbar } from './components/nav'
+import { Sounds } from './components/sounds'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { baseUrl } from './sitemap'
@@ -58,6 +59,7 @@ export default function RootLayout({
           <ViewTransition name="page">
             <main className="site-main">{children}</main>
           </ViewTransition>
+          <Sounds />
           <Analytics />
           <SpeedInsights />
         </div>
