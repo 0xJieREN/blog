@@ -35,8 +35,3 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-# rendered video
-/goldberg/out/
-/flaxen/out/
-/butterfly/out/
