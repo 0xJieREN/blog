@@ -5,6 +5,9 @@ import { Navbar } from './components/nav'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { baseUrl } from './sitemap'
+// Next's bundled React exports ViewTransition; @types/react 18 does not know it.
+// @ts-expect-error
+import { ViewTransition } from 'react'
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -50,7 +53,11 @@ export default function RootLayout({
       <body>
         <div className="site-shell">
           <Navbar />
-          <main className="site-main">{children}</main>
+          {/* global.css animates the `page` group on navigation. Wrapping
+              <main> gives the group one element that stays across pages. */}
+          <ViewTransition name="page">
+            <main className="site-main">{children}</main>
+          </ViewTransition>
           <Analytics />
           <SpeedInsights />
         </div>

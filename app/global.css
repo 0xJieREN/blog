@@ -153,45 +153,34 @@ a {
   background: var(--selection);
 }
 
-/* Enter motion: blocks rise 8px and fade in, one after another (Paco). */
+/*
+ * Page change (Shu Ding): the old page blurs out, then the new one comes
+ * into focus. app/layout.tsx names the page content `page`; the header stays.
+ * With reduced motion, the browser's default short crossfade applies.
+ */
 
-@keyframes enter {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
+@media not (prefers-reduced-motion: reduce) {
+  ::view-transition-old(page) {
+    animation: page-out 240ms cubic-bezier(0.6, 0, 0.8, 1) both;
   }
+
+  ::view-transition-new(page) {
+    animation: page-in 360ms var(--ease-out) 120ms both;
+  }
+}
+
+@keyframes page-out {
   to {
-    opacity: 1;
-    transform: none;
+    opacity: 0;
+    filter: blur(4px);
   }
 }
 
-/* The reduced-motion version: same timing, no movement. */
-@keyframes fade {
+@keyframes page-in {
   from {
     opacity: 0;
+    filter: blur(4px);
   }
-}
-
-.site-header,
-.site-main > * > * {
-  animation: enter 280ms var(--ease-out) both;
-}
-
-.site-main > * > :nth-child(1) {
-  animation-delay: 50ms;
-}
-
-.site-main > * > :nth-child(2) {
-  animation-delay: 100ms;
-}
-
-.site-main > * > :nth-child(3) {
-  animation-delay: 150ms;
-}
-
-.site-main > * > :nth-child(n + 4) {
-  animation-delay: 200ms;
 }
 
 /* Shell */
@@ -643,21 +632,44 @@ a {
   margin-top: calc(var(--prose-line) * 1.5);
 }
 
+/*
+ * The # hangs in the margin. It comes into focus after a 300ms hover, so a
+ * pointer passing over the heading does not flash it, and fades back slowly.
+ * The heading a link points to keeps its #.
+ */
 .prose .anchor {
   position: absolute;
   left: -1em;
   width: 1em;
-  visibility: hidden;
+  opacity: 0;
+  filter: blur(4px);
   text-decoration: none;
+  user-select: none;
+  transition:
+    opacity 500ms var(--ease),
+    filter 500ms var(--ease);
 }
 
 .prose .anchor::after {
-  color: var(--tertiary);
+  color: var(--underline);
   content: '#';
+  transition: color 240ms var(--ease);
+}
+
+.prose *:hover > .anchor,
+.prose :target > .anchor,
+.prose .anchor:focus-visible {
+  opacity: 1;
+  filter: none;
 }
 
 .prose *:hover > .anchor {
-  visibility: visible;
+  transition-delay: 300ms;
+}
+
+.prose .anchor:hover::after {
+  color: var(--secondary);
+  transition-duration: 80ms;
 }
 
 .prose ul,
@@ -851,11 +863,6 @@ a {
   }
 
   /* Remove movement. Keep the opacity and color changes that aid reading. */
-  .site-header,
-  .site-main > * > * {
-    animation-name: fade;
-  }
-
   .site-nav a:active,
   .featured-link:active {
     scale: none;
