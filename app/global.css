@@ -212,10 +212,18 @@ a {
   font-weight: 500;
 }
 
+/*
+ * One em tall, the mark's black ink (fish top to feet) spans the same height
+ * as the Chinese name's glyphs, and the 0.08em lift lines up both edges.
+ * "Jared" is shorter but shares the same centre, so the logo keeps one size
+ * and position in both languages and does not jump when switching.
+ * The width keeps the viewBox's 62:36.2 ratio.
+ */
 .logo {
-  width: 48px;
-  height: 28px;
+  width: 1.713em;
+  height: 1em;
   flex: none;
+  translate: 0 -0.08em;
 }
 
 .site-nav {
